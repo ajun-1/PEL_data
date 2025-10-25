@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据导入 - PEL生态数据看板</title>
+    
+    <!-- 澶栭儴璧勬簮 -->
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+    
+    <!-- 鏈湴鏍峰紡 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .upload-area {
+            border: 2px dashed var(--light-200);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            text-align: center;
+            background-color: var(--dark-100);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(22, 93, 255, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background-color: rgba(22, 93, 255, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: var(--light-200);
+            margin-bottom: 16px;
+        }
+        
+        .upload-text {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            color: var(--light-100);
+            font-size: 14px;
+        }
+        
+        .file-list {
+            margin-top: 24px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background-color: var(--dark-100);
+            border-radius: var(--border-radius);
+            margin-bottom: 12px;
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .file-details h4 {
+            color: white;
+            margin: 0 0 4px 0;
+            font-size: 14px;
+        }
+        
+        .file-details p {
+            color: var(--light-100);
+            margin: 0;
+            font-size: 12px;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: var(--dark-200);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--success-color);
+            transition: width 0.3s ease;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            color: white;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--dark-200);
+            border: 1px solid var(--dark-200);
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.2);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航：由 common.js 动态生成 -->
+    <header class="top-nav"></header>
+
+    <!-- 渚ц竟鏍忓鑸?-->
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">数据管理</div>
+                <div class="sidebar-menu">
+                    <a href="import-log.html" class="sidebar-item" data-page="import-log">
+                        <i class="fa fa-upload"></i>
+                        <span>瀵煎叆鏃ュ織</span>
+                    </a>
+                    <a href="data-import.html" class="sidebar-item active" data-page="data-import">
+                        <i class="fa fa-database"></i>
+                        <span>数据导入</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">鐢熸€佸垎鏋?/div>
+                <div class="sidebar-menu">
+                    <a href="alliance-overview.html" class="sidebar-item" data-page="alliance-overview">
+                        <i class="fa fa-dashboard"></i>
+                        <span>鑱旂洘鐢熸€?/span>
+                    </a>
+                    <a href="club-analysis.html" class="sidebar-item" data-page="club-analysis">
+                        <i class="fa fa-users"></i>
+                        <span>鎬讳勘涔愰儴鍒嗘瀽</span>
+                    </a>
+                    <a href="club-detail.html" class="sidebar-item" data-page="club-detail">
+                        <i class="fa fa-building"></i>
+                        <span>淇变箰閮ㄤ釜浣撹瘎浼?/span>
+                    </a>
+                    <a href="player-management.html" class="sidebar-item" data-page="player-management">
+                        <i class="fa fa-user-circle-o"></i>
+                        <span>閫夋墜绠＄悊</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">涓氬姟鍒嗘瀽</div>
+                <div class="sidebar-menu">
+                    <a href="match-analysis.html" class="sidebar-item" data-page="match-analysis">
+                        <i class="fa fa-trophy"></i>
+                        <span>璧涗簨鍒嗘瀽</span>
+                    </a>
+                    <a href="financial-report.html" class="sidebar-item" data-page="financial-report">
+                        <i class="fa fa-line-chart"></i>
+                        <span>璐㈠姟鎶ュ憡</span>
+                    </a>
+                    <a href="brand-value.html" class="sidebar-item" data-page="brand-value">
+                        <i class="fa fa-crown"></i>
+                        <span>鍝佺墝浠峰€?/span>
+                    </a>
+                    <a href="market-analysis.html" class="sidebar-item" data-page="market-analysis">
+                        <i class="fa fa-bar-chart"></i>
+                        <span>甯傚満鍒嗘瀽</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">绯荤粺璁剧疆</div>
+                <div class="sidebar-menu">
+                    <a href="system-config.html" class="sidebar-item" data-page="system-config">
+                        <i class="fa fa-cog"></i>
+                        <span>绯荤粺閰嶇疆</span>
+                    </a>
+                    <a href="user-management.html" class="sidebar-item" data-page="user-management">
+                        <i class="fa fa-users"></i>
+                        <span>鐢ㄦ埛绠＄悊</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 涓诲唴瀹瑰尯鍩?-->
+    <main class="main-content">
+        <!-- 椤甸潰鏍囬 -->
+        <div class="page-header">
+            <h2 class="page-title">数据导入</h2>
+            <p class="page-subtitle">上传并导入各类数据文件到系统</p>
+        </div>
+
+        <!-- 瀵煎叆閰嶇疆 -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fa fa-cog"></i>
+                    导入配置
+                </h3>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div class="form-group">
+                    <label class="form-label">数据类型</label>
+                    <select class="form-input">
+                        <option value="">请选择数据类型</option>
+                        <option value="club">俱乐部基础数据</option>
+                        <option value="player">选手数据</option>
+                        <option value="financial">俱乐部财务数据</option>
+                        <option value="match">比赛成绩数据</option>
+                        <option value="transfer">选手交易数据</option>
+                        <option value="sponsor">赞助商数据</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">赛季</label>
+                    <select class="form-input">
+                        <option value="2025-summer">2025夏季赛</option>
+                        <option value="2025-spring">2025春季赛</option>
+                        <option value="2024-summer">2024夏季赛</option>
+                        <option value="2024-spring">2024春季赛</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">瀵煎叆璇存槑</label>
+                <textarea class="form-input form-textarea" placeholder="璇疯緭鍏ユ湰娆″鍏ョ殑璇存槑淇℃伅..."></textarea>
+            </div>
+        </div>
+
+        <!-- 鏂囦欢涓婁紶鍖哄煙 -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fa fa-upload"></i>
+                    文件上传
+                </h3>
+            </div>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fa fa-cloud-upload"></i>
+                </div>
+                <div class="upload-text">点击或拖拽文件到此区域上传</div>
+                <div class="upload-hint">支持 .xlsx, .xls, .csv 格式，单个文件不超过 10MB</div>
+                <input type="file" id="fileInput" style="display: none;" multiple accept=".xlsx,.xls,.csv">
+            </div>
+            
+            <!-- 鏂囦欢鍒楄〃 -->
+            <div class="file-list" id="fileList" style="display: none;">
+                <h4 style="color: white; margin-bottom: 16px;">待上传文件</h4>
+                <div id="fileItems"></div>
+            </div>
+        </div>
+
+        <!-- 瀵煎叆鍘嗗彶 -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fa fa-history"></i>
+                    最近导入记录
+                </h3>
+                <a href="import-log.html" class="btn btn-secondary">
+                    查看全部
+                    <i class="fa fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>瀵煎叆鏃堕棿</th>
+                            <th>鏂囦欢鍚嶇О</th>
+                            <th>鏁版嵁绫诲瀷</th>
+                            <th>鐘舵€?/th>
+                            <th>璁板綍鏁?/th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2023-06-15 14:30:25</td>
+                            <td>俱乐部基础数据_2025夏季赛.xlsx</td>
+                            <td>俱乐部基础数据</td>
+                            <td><span class="status-badge status-success">成功</span></td>
+                            <td>24</td>
+                        </tr>
+                        <tr>
+                            <td>2023-06-10 09:15:42</td>
+                            <td>选手数据_2025夏季赛.xlsx</td>
+                            <td>选手数据</td>
+                            <td><span class="status-badge status-success">成功</span></td>
+                            <td>256</td>
+                        </tr>
+                        <tr>
+                            <td>2023-06-05 16:42:18</td>
+                            <td>俱乐部财务数据_2025夏季赛.csv</td>
+                            <td>俱乐部财务数据</td>
+                            <td><span class="status-badge status-warning">部分失败</span></td>
+                            <td>19/24</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 鎿嶄綔鎸夐挳 -->
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+            <button class="btn btn-secondary" onclick="clearFiles()">
+                <i class="fa fa-trash"></i>
+                娓呯┖鏂囦欢
+            </button>
+            <button class="btn btn-primary" id="startImport" disabled>
+                <i class="fa fa-play"></i>
+                寮€濮嬪鍏?
+            </button>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/common.js"></script>
+    <script>
+        // 鏂囦欢涓婁紶鍔熻兘
+        let selectedFiles = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+            const fileItems = document.getElementById('fileItems');
+            const startImportBtn = document.getElementById('startImport');
+            
+            // 鐐瑰嚮涓婁紶鍖哄煙
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // 鏂囦欢閫夋嫨
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // 鎷栨嫿涓婁紶
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files);
+                addFiles(files);
+            });
+            
+            // 寮€濮嬪鍏?
+            startImportBtn.addEventListener('click', startImport);
+        });
+        
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            addFiles(files);
+        }
+        
+        function addFiles(files) {
+            files.forEach(file => {
+                if (validateFile(file)) {
+                    selectedFiles.push({
+                        file: file,
+                        id: Date.now() + Math.random(),
+                        progress: 0,
+                        status: 'pending'
+                    });
+                }
+            });
+            
+            updateFileList();
+            updateImportButton();
+        }
+        
+        function validateFile(file) {
+            const allowedTypes = ['.xlsx', '.xls', '.csv'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedTypes.includes(fileExtension)) {
+                alert(`不支持的文件格式: ${file.name}`);
+                return false;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) {
+                alert(`文件过大: ${file.name} (超过10MB)`);
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            const fileItems = document.getElementById('fileItems');
+            
+            if (selectedFiles.length === 0) {
+                fileList.style.display = 'none';
+                return;
+            }
+            
+            fileList.style.display = 'block';
+            fileItems.innerHTML = selectedFiles.map(fileObj => `
+                <div class="file-item" data-id="${fileObj.id}">
+                    <div class="file-info">
+                        <div class="file-icon">
+                            <i class="fa fa-file-excel-o"></i>
+                        </div>
+                        <div class="file-details">
+                            <h4>${fileObj.file.name}</h4>
+                            <p>${formatFileSize(fileObj.file.size)} 鈥?${getFileType(fileObj.file.name)}</p>
+                            ${fileObj.status === 'uploading' ? `
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${fileObj.progress}%"></div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        ${fileObj.status === 'pending' ? `
+                            <button class="btn-icon" onclick="removeFile('${fileObj.id}')" title="绉婚櫎">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        ` : ''}
+                        ${fileObj.status === 'completed' ? `
+                            <span class="status-badge status-success">宸插畬鎴?/span>
+                        ` : ''}
+                        ${fileObj.status === 'error' ? `
+                            <span class="status-badge status-danger">澶辫触</span>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function removeFile(fileId) {
+            selectedFiles = selectedFiles.filter(f => f.id !== fileId);
+            updateFileList();
+            updateImportButton();
+        }
+        
+        function clearFiles() {
+            selectedFiles = [];
+            updateFileList();
+            updateImportButton();
+        }
+        
+        function updateImportButton() {
+            const startImportBtn = document.getElementById('startImport');
+            startImportBtn.disabled = selectedFiles.length === 0;
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function getFileType(fileName) {
+            const extension = fileName.split('.').pop().toLowerCase();
+            const typeMap = {
+                'xlsx': 'Excel 文件',
+                'xls': 'Excel 文件',
+                'csv': 'CSV 文件'
+            };
+            return typeMap[extension] || '未知类型';
+        }
+        
+        function startImport() {
+            if (selectedFiles.length === 0) return;
+            
+            // 妯℃嫙瀵煎叆杩囩▼
+            selectedFiles.forEach((fileObj, index) => {
+                setTimeout(() => {
+                    simulateUpload(fileObj);
+                }, index * 1000);
+            });
+        }
+        
+        function simulateUpload(fileObj) {
+            fileObj.status = 'uploading';
+            fileObj.progress = 0;
+            updateFileList();
+            
+            const interval = setInterval(() => {
+                fileObj.progress += Math.random() * 20;
+                if (fileObj.progress >= 100) {
+                    fileObj.progress = 100;
+                    fileObj.status = 'completed';
+                    clearInterval(interval);
+                    
+                    // 鏄剧ず鎴愬姛娑堟伅
+                    setTimeout(() => {
+                        alert(`文件 "${fileObj.file.name}" 导入成功！`);
+                    }, 500);
+                }
+                updateFileList();
+            }, 200);
+        }
+    </script>
+<script src="js/common.js"></script>
+</body>
+</html>
+

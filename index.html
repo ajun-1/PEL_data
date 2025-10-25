@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>首页 - PEL生态数据看板</title>
+  <script>
+    // 检查登录状态，如果未登录则重定向到登录页面
+    if (!sessionStorage.getItem('isLoggedIn')) {
+      window.location.href = 'login.html';
+    }
+  </script>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css" />
+  <style>
+    /* 首页美化与卡片布局 */
+    .content { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .page-header h2 { color: var(--light-100); margin: 0; font-size: 1.5rem; font-weight: 700; }
+    .page-header .page-description { color: var(--light-200); font-size: 0.9rem; margin-top: 8px; }
+
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+    .dashboard-card { background: linear-gradient(135deg, #1E2329 0%, #2A2F36 100%); border: 1px solid #4E5969; border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+    .dashboard-title { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px dashed rgba(229, 230, 235, 0.15); color: var(--light-100); font-weight: 600; letter-spacing: 0.5px; }
+    .dashboard-title i { color: var(--primary-color); }
+
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(160px, 1fr)); gap: 16px; padding: 16px 20px 20px; }
+    @media (min-width: 1200px) { .grid { grid-template-columns: repeat(3, minmax(160px, 1fr)); } }
+
+    .metric-card { display: block; background: linear-gradient(135deg, rgba(22,93,255,0.06) 0%, rgba(22,93,255,0.02) 100%); border: 1px solid #3B4557; border-radius: 12px; padding: 16px; text-decoration: none; color: var(--light-100); transition: var(--transition); }
+    .metric-card:hover { border-color: var(--primary-color); box-shadow: 0 6px 18px rgba(64,123,255,0.2); transform: translateY(-2px); }
+    .metric-value { font-size: 1.1rem; font-weight: 700; color: var(--primary-color); margin-bottom: 8px; }
+    .metric-label { font-size: 0.9rem; color: var(--light-200); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 侧边栏：由 common.js 生成 -->
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <!-- 顶部导航 -->
+      <header class="top-nav">
+        <div class="nav-left">
+          <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1>首页</h1>
+        </div>
+        <div class="nav-right">
+          <span class="user-info">管理员</span>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="page-header">
+          <h2>快捷入口</h2>
+          <p class="page-description">从此页快速跳转到常用页面。</p>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <div class="dashboard-title">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>联盟生态大盘</span>
+            </div>
+            <div class="grid">
+              <a class="metric-card" href="alliance-dashboard.html" title="联盟生态大盘">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">联盟生态大盘</div>
+              </a>
+              <a class="metric-card" href="alliance-indicators.html" title="细分指标">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">细分指标</div>
+              </a>
+              <a class="metric-card" href="alliance-overview.html" title="联盟总览">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">联盟总览</div>
+              </a>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-title">
+              <i class="fas fa-users"></i>
+              <span>俱乐部相关</span>
+            </div>
+            <div class="grid">
+              <a class="metric-card" href="club-overview.html" title="俱乐部总览">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">俱乐部总览</div>
+              </a>
+              <a class="metric-card" href="club-dashboard.html" title="俱乐部数据看板">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">俱乐部数据看板</div>
+              </a>
+              <a class="metric-card" href="club-indicators.html" title="俱乐部细分指标">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">俱乐部细分指标</div>
+              </a>
+              <a class="metric-card" href="club-organization.html" title="组织架构">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">组织架构</div>
+              </a>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-title">
+              <i class="fas fa-upload"></i>
+              <span>数据与系统</span>
+            </div>
+            <div class="grid">
+              <a class="metric-card" href="data-import.html" title="数据导入">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">数据导入</div>
+              </a>
+              <a class="metric-card" href="import-log.html" title="导入日志">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">导入日志</div>
+              </a>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-title">
+              <i class="fas fa-user-cog"></i>
+              <span>用户与配置</span>
+            </div>
+            <div class="grid">
+              <a class="metric-card" href="user-management.html" title="用户管理">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">用户管理</div>
+              </a>
+              <a class="metric-card" href="system-config.html" title="系统配置">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">系统配置</div>
+              </a>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-title">
+              <i class="fa-solid fa-user"></i>
+              <span>选手相关</span>
+            </div>
+            <div class="grid">
+              <a class="metric-card" href="player-overview.html" title="选手总览">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">选手总览</div>
+              </a>
+              <a class="metric-card" href="player-profile.html" title="选手画像">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">选手画像</div>
+              </a>
+              <a class="metric-card" href="player-trading.html" title="选手交易">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">选手交易</div>
+              </a>
+              <a class="metric-card" href="player-traffic.html" title="选手流量">
+                <div class="metric-value">Go</div>
+                <div class="metric-label">选手流量</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script>
+    // 将首页快捷入口设置为 SPA 路由，使用 iframe 无刷新加载
+    window.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('a.metric-card').forEach(function (a) {
+        a.setAttribute('data-router', 'spa');
+      });
+    });
+  </script>
+</body>
+</html>

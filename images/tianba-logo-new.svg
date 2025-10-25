@@ -1,0 +1,66 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tianbaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6c5ce7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#a29bfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fd79a8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tianbaGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fdcb6e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f39c12;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadowTianba" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Hexagon -->
+  <polygon points="50,10 75,25 75,55 50,90 25,55 25,25" fill="url(#tianbaGradient)" stroke="#fff" stroke-width="2" filter="url(#shadowTianba)"/>
+  
+  <!-- Inner Hexagon -->
+  <polygon points="50,20 65,30 65,50 50,75 35,50 35,30" fill="none" stroke="url(#tianbaGold)" stroke-width="2"/>
+  
+  <!-- Tiger Head Silhouette -->
+  <g fill="url(#tianbaGold)">
+    <!-- Head -->
+    <ellipse cx="50" cy="45" rx="12" ry="10"/>
+    <!-- Ears -->
+    <polygon points="42,38 45,32 48,38"/>
+    <polygon points="52,38 55,32 58,38"/>
+    <!-- Stripes -->
+    <rect x="45" y="40" width="2" height="8" rx="1"/>
+    <rect x="53" y="40" width="2" height="8" rx="1"/>
+    <rect x="49" y="42" width="2" height="6" rx="1"/>
+  </g>
+  
+  <!-- Eyes -->
+  <g fill="#2d3436">
+    <circle cx="46" cy="43" r="1.5"/>
+    <circle cx="54" cy="43" r="1.5"/>
+  </g>
+  <g fill="#fff">
+    <circle cx="46.5" cy="42.5" r="0.5"/>
+    <circle cx="54.5" cy="42.5" r="0.5"/>
+  </g>
+  
+  <!-- Nose -->
+  <polygon points="50,46 48,48 52,48" fill="#2d3436"/>
+  
+  <!-- Text -->
+  <text x="50" y="65" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold" font-family="Arial">天霸</text>
+  
+  <!-- Decorative Elements -->
+  <g fill="#fdcb6e" opacity="0.7">
+    <polygon points="30,20 32,25 37,25 33,28 35,33 30,30 25,33 27,28 23,25 28,25"/>
+    <polygon points="70,20 72,25 77,25 73,28 75,33 70,30 65,33 67,28 63,25 68,25"/>
+  </g>
+  
+  <!-- Lightning Effects -->
+  <g fill="#fff" opacity="0.6">
+    <polygon points="20,45 25,40 22,50 27,45 22,55"/>
+    <polygon points="80,45 75,40 78,50 73,45 78,55"/>
+  </g>
+  
+  <!-- Bottom Text -->
+  <text x="50" y="85" text-anchor="middle" fill="#fff" font-size="6" font-weight="bold" font-family="Arial">TIANBA</text>
+</svg>

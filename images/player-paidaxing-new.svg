@@ -1,0 +1,76 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#74b9ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0984e3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="faceGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fd79a8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fdcb6e;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="starGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#fd79a8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e84393;stop-opacity:1" />
+    </radialGradient>
+    <filter id="shadow3" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGradient3)" stroke="#fff" stroke-width="4" filter="url(#shadow3)"/>
+  
+  <!-- Starfish Shape Background -->
+  <g transform="translate(60,50) scale(0.8)">
+    <path d="M 0,-25 L 7,-8 L 25,-8 L 12,3 L 18,20 L 0,10 L -18,20 L -12,3 L -25,-8 L -7,-8 Z" fill="url(#starGradient)" opacity="0.3"/>
+  </g>
+  
+  <!-- Face -->
+  <circle cx="60" cy="50" r="24" fill="url(#faceGradient3)"/>
+  
+  <!-- Eyes -->
+  <circle cx="53" cy="45" r="3" fill="#2d3436"/>
+  <circle cx="67" cy="45" r="3" fill="#2d3436"/>
+  <circle cx="54" cy="44" r="1" fill="#fff"/>
+  <circle cx="68" cy="44" r="1" fill="#fff"/>
+  
+  <!-- Nose -->
+  <ellipse cx="60" cy="52" rx="1.5" ry="2" fill="#e17055"/>
+  
+  <!-- Mouth (Happy) -->
+  <path d="M 54 58 Q 60 63 66 58" stroke="#2d3436" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Hair/Cap -->
+  <ellipse cx="60" cy="35" rx="28" ry="15" fill="#fd79a8"/>
+  <circle cx="60" cy="28" r="5" fill="#e84393"/>
+  
+  <!-- Body/Shirt -->
+  <ellipse cx="60" cy="85" rx="35" ry="25" fill="#00cec9"/>
+  <rect x="25" y="75" width="70" height="30" fill="#00cec9" rx="5"/>
+  
+  <!-- Star Pattern on Shirt -->
+  <g transform="translate(60,85) scale(0.4)">
+    <path d="M 0,-15 L 4,-5 L 15,-5 L 7,2 L 11,12 L 0,6 L -11,12 L -7,2 L -15,-5 L -4,-5 Z" fill="#fff" opacity="0.8"/>
+  </g>
+  
+  <!-- Decorative Stars -->
+  <g transform="translate(30,30) scale(0.3)">
+    <path d="M 0,-15 L 4,-5 L 15,-5 L 7,2 L 11,12 L 0,6 L -11,12 L -7,2 L -15,-5 L -4,-5 Z" fill="#fd79a8"/>
+  </g>
+  
+  <g transform="translate(90,35) scale(0.25)">
+    <path d="M 0,-15 L 4,-5 L 15,-5 L 7,2 L 11,12 L 0,6 L -11,12 L -7,2 L -15,-5 L -4,-5 Z" fill="#e84393"/>
+  </g>
+  
+  <g transform="translate(25,90) scale(0.35)">
+    <path d="M 0,-15 L 4,-5 L 15,-5 L 7,2 L 11,12 L 0,6 L -11,12 L -7,2 L -15,-5 L -4,-5 Z" fill="#74b9ff"/>
+  </g>
+  
+  <g transform="translate(95,85) scale(0.3)">
+    <path d="M 0,-15 L 4,-5 L 15,-5 L 7,2 L 11,12 L 0,6 L -11,12 L -7,2 L -15,-5 L -4,-5 Z" fill="#00b894"/>
+  </g>
+  
+  <!-- Gaming Elements -->
+  <circle cx="40" cy="25" r="6" fill="#e84393" opacity="0.8"/>
+  <text x="40" y="29" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">★</text>
+</svg>

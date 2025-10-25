@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俱乐部总览 - PEL联盟生态数据大屏</title>
+    
+    <!-- 外部资源 -->
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+    <script src="js/echarts.min.js"></script>
+    
+    <!-- 本地样式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .club-overview-container {
+            padding: 24px;
+            background: #1D2129;
+            min-height: 100vh;
+        }
+        
+        .page-header {
+            margin-bottom: 32px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            font-size: 16px;
+            color: #C9CDD4;
+        }
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .overview-card {
+            background: #2E333B;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+        
+        .card-icon {
+            color: #165DFF;
+            font-size: 20px;
+        }
+        
+        .card-description {
+            background: #4E5969;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .description-label {
+            color: #165DFF;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .description-text {
+            color: #C9CDD4;
+            line-height: 1.6;
+        }
+        
+        .pyramid-container {
+            position: relative;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pyramid-level {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4px 0;
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .level-s { background: #FF6B35; width: 80px; height: 32px; }
+        .level-a { background: #FF9500; width: 100px; height: 32px; }
+        .level-b { background: #FFD60A; width: 120px; height: 32px; color: #1D2129; }
+        .level-c { background: #32D74B; width: 140px; height: 32px; }
+        .level-d { background: #007AFF; width: 160px; height: 32px; }
+        
+        .level-info {
+            position: absolute;
+            right: -200px;
+            color: #FFFFFF;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: #2E333B;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #C9CDD4;
+            margin-bottom: 8px;
+        }
+        
+        .stat-change {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #32D74B;
+        }
+        
+        .club-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .club-tag {
+            background: #165DFF;
+            color: #FFFFFF;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .distribution-chart {
+            height: 200px;
+            background: #4E5969;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #C9CDD4;
+        }
+        
+        @media (max-width: 1200px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .level-info {
+                position: static;
+                margin-top: 8px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶栏导航 -->
+    <header class="top-nav"></header>
+
+    <!-- 侧边栏导航 -->
+    <aside class="sidebar"></aside>
+
+    <!-- 主内容区域 -->
+
+    <main class="main-content">
+        <div class="page-container">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h2 class="page-title">俱乐部总览</h2>
+                <p class="page-subtitle">分析所有俱乐部的健康度、预警状态与发展趋势</p>
+            </div>
+
+            <!-- 统计卡片 -->
+            <section class="stats-row" aria-label="核心指标">
+                <!-- 健康俱乐部 -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="left"><i class="fa-solid fa-heart"></i><span>健康俱乐部</span></div>
+                        <div class="right"><div class="status-dot ok"></div></div>
+                    </div>
+                    <div class="stat-value"><span class="num">16</span><span class="unit">家</span></div>
+                    <div class="stat-trend trend-up">+2 较上赛季</div>
+                    <div class="club-tags">
+                        <span class="club-tag tag-ag">AG</span>
+                        <span class="club-tag tag-nv">NV</span>
+                        <span class="club-tag tag-tc">TC</span>
+                        <span class="club-tag tag-rsg">RSG</span>
+                        <span class="club-tag tag-jl">JL</span>
+                    </div>
+                </div>
+                
+                <!-- 注意俱乐部 -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="left"><i class="fa-solid fa-exclamation-triangle"></i><span>注意俱乐部</span></div>
+                        <div class="right"><div class="status-dot mid"></div></div>
+                    </div>
+                    <div class="stat-value"><span class="num">1</span><span class="unit">家</span></div>
+                    <div class="stat-trend trend-down">+1 较上赛季</div>
+                    <div class="club-tags">
+                        <span class="club-tag tag-tsg">TSG</span>
+                    </div>
+                </div>
+                
+                <!-- 预警俱乐部 -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="left"><i class="fa-solid fa-triangle-exclamation"></i><span>预警俱乐部</span></div>
+                        <div class="right"><div class="status-dot warn"></div></div>
+                    </div>
+                    <div class="stat-value"><span class="num">2</span><span class="unit">家</span></div>
+                    <div class="stat-trend trend-up">+1 较上赛季</div>
+                    <div class="club-tags">
+                        <span class="club-tag tag-ag">AG</span>
+                        <span class="club-tag tag-rsg">RSG</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 分析卡片网格 -->
+            <section class="charts-row">
+                <!-- 俱乐部层级划分金字塔 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-sitemap"></i> 俱乐部层级划分金字塔</h3>
+                        <div class="card-actions">
+                            <select class="classification-dropdown" id="classificationSelect">
+                                <option value="seat-value" selected>按席位价值划分</option>
+                                <option value="overall-health">按整体健康度划分</option>
+                                <option value="financial-health">按财务健康度划分</option>
+                                <option value="operational-health">按运营健康度划分</option>
+                                <option value="training-competitiveness">按赛训竞争力划分</option>
+                                <option value="commercial-health">按商业化健康度划分</option>
+                                <option value="management-efficiency">按管理效能划分</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="pyramid-container">
+                            <!-- S级 -->
+                            <div class="pyramid-level level-s">
+                                <div class="level-bar">S级</div>
+                                <div class="level-info">S级共4家：TT、Tianba、WBG、JDG</div>
+                            </div>
+                            <!-- A级 -->
+                            <div class="pyramid-level level-a">
+                                <div class="level-bar">A级</div>
+                                <div class="level-info">A级共4家：TC、STE、LGD、RW</div>
+                            </div>
+                            <!-- B级 -->
+                            <div class="pyramid-level level-b">
+                                <div class="level-bar">B级</div>
+                                <div class="level-info">B级共4家：AG、VS、TJB、NV</div>
+                            </div>
+                            <!-- C级 -->
+                            <div class="pyramid-level level-c">
+                                <div class="level-bar">C级</div>
+                                <div class="level-info">C级共4家：4AM、KSG、ACT、KBG</div>
+                            </div>
+                            <!-- D级 -->
+                            <div class="pyramid-level level-d">
+                                <div class="level-bar">D级</div>
+                                <div class="level-info">D级共4家：RSG、ST、TEC、KONE</div>
+                            </div>
+                        </div>
+                        
+                        <div class="pyramid-description">
+                            俱乐部层级呈现典型的金字塔结构，S级俱乐部（TT、Tianba、WBG、JDG）处于顶端，代表联盟最高水平；A级俱乐部（TC、STE、LGD、RW）紧随其后；B级和C级俱乐部构成联盟主体；D级俱乐部（RSG、ST、TEC、KONE）需重点关注和扶持。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 俱乐部席位价值区间分布 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-chart-column"></i> 俱乐部席位价值区间分布</h3>
+                        <div class="card-actions">
+                            <select class="season-dropdown" id="valueSeasonSelect">
+                                <option value="current-season" selected>当前赛季</option>
+                                <option value="previous1-season">前1个赛季</option>
+                                <option value="previous2-season">前2个赛季</option>
+                                <option value="previous3-season">前3个赛季</option>
+                                <option value="previous4-season">前4个赛季</option>
+                                <option value="previous5-season">前5个赛季</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="distributionChart" class="chart-box"></div>
+                        
+                        <div class="chart-description">
+                            俱乐部席位价值主要集中在500-1500万区间，占比约54.5%；高价值席位（1500万以上）占比约18.2%，体现头部俱乐部的稀缺性和商业价值；预警俱乐部席位价值较低，需通过运营优化提升价值。
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 四象限模型分析 -->
+            <section class="quadrant-analysis">
+                <div class="card full-width">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-chart-scatter"></i> 基于运营能力与赛训能力四象限模型分析</h3>
+                        <div class="card-actions">
+                            <span class="tag">能力评估</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="quadrantChart" class="chart-box large"></div>
+                        
+                        <!-- 四象限分类卡片 -->
+                        <div class="quadrant-cards">
+                            <!-- 明星俱乐部 -->
+                            <div class="quadrant-card star-club">
+                                <div class="quadrant-header">
+                                    <h4>明星俱乐部（高赛训+高运营）</h4>
+                                    <div class="club-tags">
+                                        <span class="club-tag tag-ag">AG</span>
+                                        <span class="club-tag tag-nv">NV</span>
+                                        <span class="club-tag tag-tc">TC</span>
+                                        <span class="club-tag tag-rsg">RSG</span>
+                                        <span class="club-tag tag-jl">JL</span>
+                                    </div>
+                                </div>
+                                <p class="quadrant-desc">赛训成绩优异，同时具备强大的运营能力和商业价值，是联盟的标杆俱乐部。</p>
+                            </div>
+
+                            <!-- 潜力俱乐部 -->
+                            <div class="quadrant-card potential-club">
+                                <div class="quadrant-header">
+                                    <h4>潜力俱乐部（高赛训+低运营）</h4>
+                                    <div class="club-tags">
+                                        <span class="club-tag tag-ag">AG</span>
+                                        <span class="club-tag tag-nv">NV</span>
+                                        <span class="club-tag tag-tc">TC</span>
+                                        <span class="club-tag tag-rsg">RSG</span>
+                                        <span class="club-tag tag-jl">JL</span>
+                                    </div>
+                                </div>
+                                <p class="quadrant-desc">赛训实力较强，但运营能力有待提升，需要加强商业化运营和品牌建设。</p>
+                            </div>
+
+                            <!-- 稳健俱乐部 -->
+                            <div class="quadrant-card stable-club">
+                                <div class="quadrant-header">
+                                    <h4>稳健俱乐部（低赛训+高运营）</h4>
+                                    <div class="club-tags">
+                                        <span class="club-tag tag-ag">AG</span>
+                                        <span class="club-tag tag-nv">NV</span>
+                                        <span class="club-tag tag-tc">TC</span>
+                                        <span class="club-tag tag-rsg">RSG</span>
+                                        <span class="club-tag tag-jl">JL</span>
+                                    </div>
+                                </div>
+                                <p class="quadrant-desc">竞技成绩一般，但运营能力较强，商业价值稳定，需要提升竞技水平。</p>
+                            </div>
+
+                            <!-- 待提升俱乐部 -->
+                            <div class="quadrant-card improvement-club">
+                                <div class="quadrant-header">
+                                    <h4>待提升俱乐部（低赛训+低运营）</h4>
+                                    <div class="club-tags">
+                                        <span class="club-tag tag-ag">AG</span>
+                                        <span class="club-tag tag-nv">NV</span>
+                                        <span class="club-tag tag-tc">TC</span>
+                                        <span class="club-tag tag-rsg">RSG</span>
+                                        <span class="club-tag tag-jl">JL</span>
+                                    </div>
+                                </div>
+                                <p class="quadrant-desc">在赛训和运营方面都存在较大提升空间，需要全面加强投入和管理。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第三部分：赋能建议 -->
+            <section class="empowerment-section">
+                <div class="chart-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-lightbulb"></i>
+                            赋能建议
+                        </h2>
+                    </div>
+
+                    <!-- 标签页导航 -->
+                    <div class="tab-navigation">
+                        <button class="tab-btn active" data-tab="comprehensive">综合型俱乐部</button>
+                        <button class="tab-btn" data-tab="training">赛训偏科型</button>
+                        <button class="tab-btn" data-tab="operation">运营偏科型</button>
+                        <button class="tab-btn" data-tab="vertical">垫底型俱乐部</button>
+                    </div>
+
+                    <!-- 标签页内容 -->
+                    <div class="tab-content active" id="comprehensive-tab">
+                        <h3 class="tab-content-title">综合型俱乐部赋能建议</h3>
+                        
+                        <!-- 建议卡片 -->
+                        <div class="suggestions-grid">
+                            <div class="suggestion-card training-suggestion">
+                                <h4>赛训能力提升建议</h4>
+                                <p>建立人才梯队培养体系，构建核心竞争力的赛训体系引入人才培训训练系统，分析对手实战和知识手册建立完善的数据分析团队，优化训练效果评估</p>
+                            </div>
+                            
+                            <div class="suggestion-card operation-suggestion">
+                                <h4>运营能力提升建议</h4>
+                                <p>开发俱乐部营销体系，拓展受众群体和粉丝基础利用AI技术进行精准营销分析，精准建设内容体系完善NFT，完善专业的改善业务模式，增强财务稳定建立全球化运营团队，拓展海外市场</p>
+                            </div>
+                            
+                            <div class="suggestion-card sustainability-suggestion">
+                                <h4>可持续发展建议</h4>
+                                <p>建立完善的企业文化体系构建体系校入营销发展训练体系，履行社会责任建立风险管控制度，应对行业变化探索多元化业务布局，降低一项目依赖</p>
+                            </div>
+                        </div>
+
+                        <!-- 关键成功要素 -->
+                        <div class="success-factors">
+                            <h4>关键成功要素</h4>
+                            <div class="factors-grid">
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>保持赛训与运营的平衡发展</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>建立稳定的管理团队和人才梯队</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>持续创新，引领行业发展趋势</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>维护良好的赞助商关系，确保财务稳定</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 其他标签页内容（暂时隐藏） -->
+                    <div class="tab-content" id="training-tab">
+                        <h3 class="tab-content-title">赛训偏科型俱乐部赋能建议</h3>
+                        
+                        <!-- 建议卡片 -->
+                        <div class="suggestions-grid">
+                            <div class="suggestion-card training-suggestion">
+                                <h4>赛训能力强化建议</h4>
+                                <p>深化专业训练体系，建立更精细化的选手培养机制引入先进的数据分析工具，优化战术策略制定加强教练团队建设，提升专业指导水平建立完善的青训体系，确保人才储备</p>
+                            </div>
+                            
+                            <div class="suggestion-card operation-suggestion">
+                                <h4>运营能力补强建议</h4>
+                                <p>建立专业的品牌营销团队，提升俱乐部知名度开发多元化的商业合作模式，增加收入来源完善粉丝运营体系，扩大受众基础建立数字化运营平台，提升管理效率</p>
+                            </div>
+                            
+                            <div class="suggestion-card sustainability-suggestion">
+                                <h4>平衡发展建议</h4>
+                                <p>在保持赛训优势的同时，逐步提升运营能力建立跨部门协作机制，促进赛训与运营的有机结合引入专业的运营管理人才，弥补短板探索赛训成果的商业化转化路径</p>
+                            </div>
+                        </div>
+
+                        <!-- 关键成功要素 -->
+                        <div class="success-factors">
+                            <h4>关键成功要素</h4>
+                            <div class="factors-grid">
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>保持赛训领域的技术领先优势</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>逐步建立完善的运营管理体系</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>培养复合型管理人才</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>建立可持续的商业发展模式</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="operation-tab">
+                        <h3 class="tab-content-title">运营偏科型俱乐部赋能建议</h3>
+                        
+                        <!-- 建议卡片 -->
+                        <div class="suggestions-grid">
+                            <div class="suggestion-card operation-suggestion">
+                                <h4>运营能力深化建议</h4>
+                                <p>建立全方位的品牌营销体系，提升市场影响力开发创新的粉丝互动模式，增强用户粘性完善数字化运营平台，提升管理效率建立多元化的商业合作伙伴关系</p>
+                            </div>
+                            
+                            <div class="suggestion-card training-suggestion">
+                                <h4>赛训能力补强建议</h4>
+                                <p>引入专业的赛训管理团队，提升竞技水平建立科学的选手培养体系，确保人才储备加强数据分析能力，优化战术策略制定完善训练设施和环境，提升训练质量</p>
+                            </div>
+                            
+                            <div class="suggestion-card sustainability-suggestion">
+                                <h4>协调发展建议</h4>
+                                <p>在保持运营优势的基础上，逐步提升赛训实力建立运营与赛训的协同机制，实现资源优化配置培养既懂运营又懂赛训的复合型人才探索运营成功经验向赛训领域的转化应用</p>
+                            </div>
+                        </div>
+
+                        <!-- 关键成功要素 -->
+                        <div class="success-factors">
+                            <h4>关键成功要素</h4>
+                            <div class="factors-grid">
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>保持运营领域的创新领先地位</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>逐步建立专业的赛训管理体系</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>实现运营收益与赛训投入的良性循环</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>建立可持续的竞技发展模式</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="vertical-tab">
+                        <h3 class="tab-content-title">垫底型俱乐部赋能建议</h3>
+                        
+                        <!-- 建议卡片 -->
+                        <div class="suggestions-grid">
+                            <div class="suggestion-card training-suggestion">
+                                <h4>赛训体系重建建议</h4>
+                                <p>从基础开始重建赛训体系，制定科学的训练计划引入专业教练团队，提升整体竞技水平建立完善的青训体系，培养后备人才加强数据分析和战术研究，提升比赛表现</p>
+                            </div>
+                            
+                            <div class="suggestion-card operation-suggestion">
+                                <h4>运营管理重构建议</h4>
+                                <p>建立专业的管理团队，完善组织架构制定清晰的品牌定位和发展战略开发多元化的收入来源，改善财务状况建立有效的粉丝运营体系，扩大影响力</p>
+                            </div>
+                            
+                            <div class="suggestion-card sustainability-suggestion">
+                                <h4>全面提升建议</h4>
+                                <p>制定长期发展规划，分阶段实现目标建立学习型组织，持续改进和创新寻求外部合作伙伴，获得资源支持建立风险管控机制，确保稳定发展</p>
+                            </div>
+                        </div>
+
+                        <!-- 关键成功要素 -->
+                        <div class="success-factors">
+                            <h4>关键成功要素</h4>
+                            <div class="factors-grid">
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>建立稳定的管理团队和组织架构</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>制定切实可行的发展战略和目标</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>获得充足的资金支持和资源投入</span>
+                                </div>
+                                <div class="factor-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>保持耐心和坚持，循序渐进地改善</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第四部分：重大事件和违规事项 -->
+            <section class="events-violations-section">
+                <div class="events-violations-container">
+                    <!-- 重大事件 -->
+                    <div class="chart-card events-card">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-clipboard-list"></i>
+                                重大事件
+                            </h2>
+                        </div>
+                        
+                        <div class="events-list">
+                            <div class="event-item">
+                                <div class="event-status success">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="event-content">
+                                    <div class="event-title">XX俱乐部XX明星选手夺冠日会</div>
+                                    <div class="event-description">xxxxxxxxxxxxxxxxxxxxxxx</div>
+                                </div>
+                                <div class="event-date">2025.11</div>
+                            </div>
+
+                            <div class="event-item">
+                                <div class="event-status success">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="event-content">
+                                    <div class="event-title">XX俱乐部XX选手发表对联盟不当言论</div>
+                                    <div class="event-description">xxxxxxxxxxxxxxxxxxxxxxx</div>
+                                </div>
+                                <div class="event-date">2025.11</div>
+                            </div>
+
+                            <div class="event-item">
+                                <div class="event-status success">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="event-content">
+                                    <div class="event-title">XX俱乐部组织观众新闻</div>
+                                    <div class="event-description">xxxxxxxxxxxxxxxxxxxxxxx</div>
+                                </div>
+                                <div class="event-date">2025.11</div>
+                            </div>
+
+                            <div class="event-item">
+                                <div class="event-status success">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="event-content">
+                                    <div class="event-title">XX俱乐部组织观众新闻</div>
+                                    <div class="event-description">xxxxxxxxxxxxxxxxxxxxxxx</div>
+                                </div>
+                                <div class="event-date">2025.11</div>
+                            </div>
+                        </div>
+
+                        <div class="view-all-link">
+                            <a href="#" class="view-all-btn" onclick="openModal()">查看全部记录</a>
+                        </div>
+                    </div>
+
+                    <!-- 俱乐部违规事项 -->
+                    <div class="chart-card violations-card">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                俱乐部违规事项
+                            </h2>
+                        </div>
+                        
+                        <div class="violations-list">
+                            <div class="violation-item">
+                                <div class="violation-status warning">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="violation-content">
+                                    <div class="violation-title">XX俱乐部违规招募转移活动</div>
+                                    <div class="violation-description">xxxxxxxxxxxxxxxxxxxxxxx</div>
+                                </div>
+                                <div class="violation-date">2025.11</div>
+                            </div>
+
+                            <div class="violation-item">
+                                <div class="violation-status warning">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="violation-content">
+                                    <div class="violation-title">XX俱乐部违规XX选手发表对联盟不当言论</div>
+                                    <div class="violation-description">xxxxxxxxxxxxxxxxxxxxxxx</div>
+                                </div>
+                                <div class="violation-date">2025.11</div>
+                            </div>
+
+                            <div class="violation-item">
+                                <div class="violation-status warning">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="violation-content">
+                                    <div class="violation-title">XX俱乐部组织观众新闻</div>
+                                    <div class="violation-description">xxxxxxxxxxxxxxxxxxxxxxx</div>
+                                </div>
+                                <div class="violation-date">2025.11</div>
+                            </div>
+
+                            <div class="violation-item">
+                                <div class="violation-status warning">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="violation-content">
+                                    <div class="violation-title">XX俱乐部组织观众新闻</div>
+                                    <div class="violation-description">xxxxxxxxxxxxxxxxxxxxxxx</div>
+                                </div>
+                                <div class="violation-date">2025.11</div>
+                            </div>
+                        </div>
+
+                        <div class="view-all-link">
+                            <a href="#" class="view-all-btn" onclick="openModal()">查看全部记录</a>
+                        </div>
+                    </div>
+
+                    <!-- AG俱乐部违规事项公告 -->
+                    <div class="chart-card ag-violations-announcement">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-exclamation-triangle" style="color: #ff4444;"></i>
+                                AG俱乐部违规事项公告
+                            </h2>
+                        </div>
+                        
+                        <div class="ag-announcement-content">
+                            <div class="announcement-item">
+                                <div class="announcement-status critical">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="announcement-content">
+                                    <div class="announcement-title">违规组织粉丝活动</div>
+                                    <div class="announcement-description">XXXXXXXXXXXXXXXXXXXXXXX</div>
+                                </div>
+                            </div>
+
+                            <div class="announcement-item">
+                                <div class="announcement-status critical">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="announcement-content">
+                                    <div class="announcement-title">XX选手发表对联盟不当言论</div>
+                                    <div class="announcement-description">XXXXXXXXXXXXXXXXXXXXXXX</div>
+                                </div>
+                            </div>
+
+                            <div class="announcement-item">
+                                <div class="announcement-status critical">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="announcement-content">
+                                    <div class="announcement-title">俱乐部出现灾薪问题</div>
+                                    <div class="announcement-description">XXXXXXXXXXXXXXXXXXXXXXX</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="view-all-link">
+                            <a href="#" class="view-all-btn">查看全部记录</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        </div>
+
+        <!-- 页面内样式：仅用于本页布局与交互 -->
+        <style>
+            .page-container { padding: 24px; max-width: 1600px; margin: 0 auto; }
+            .page-header { margin-bottom: 24px; }
+            .page-title { font-size: 28px; font-weight: 700; color: #fff; margin: 0 0 6px; }
+            .page-subtitle { color: var(--light-100); margin: 0; }
+
+            .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+            .stat-card { background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); padding: 20px; position: relative; transition: transform .2s ease, box-shadow .2s ease; }
+            .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+            .stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+            .stat-header .left { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 600; }
+            .stat-header .right { color: #C9CDD4; }
+            .stat-value { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+            .stat-value .num { font-size: 36px; font-weight: 700; color: #fff; }
+            .stat-value .unit { color: #C9CDD4; font-size: 16px; }
+            .stat-trend { font-size: 14px; margin-bottom: 12px; }
+            .trend-up { color: var(--success-color); }
+            .trend-down { color: var(--danger-color); }
+            .club-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+            .club-tag { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; color: #FFFFFF; }
+            .tag-ag { background: #4285f4; }
+            .tag-nv { background: #34a853; }
+            .tag-tc { background: #ff9800; }
+            .tag-rsg { background: #e91e63; }
+            .tag-jl { background: #9c27b0; }
+            .tag-tsg { background: #ff9800; }
+
+            .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+            .card { background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); }
+            .card.full-width { grid-column: 1 / -1; }
+            .card-header { padding: 16px; border-bottom: 1px solid var(--dark-200); display: flex; align-items: center; justify-content: space-between; }
+            .card-title { color: #fff; font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 16px; }
+            .card-body { padding: 20px; }
+            .chart-box { height: 300px; }
+            .chart-box.large { height: 400px; }
+
+            .tag { padding: 4px 12px; border-radius: 16px; background: rgba(255,255,255,0.1); color: #C9CDD4; font-size: 12px; }
+
+            .pyramid-container { height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+            .pyramid-level { display: flex; align-items: center; gap: 20px; }
+            .level-bar { display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-weight: 600; border-radius: 4px; height: 32px; }
+            .level-s .level-bar { background: #FF6B35; width: 80px; }
+            .level-a .level-bar { background: #FF9500; width: 100px; }
+            .level-b .level-bar { background: #FFD60A; width: 120px; color: #1D2129; }
+            .level-c .level-bar { background: #32D74B; width: 140px; }
+            .level-d .level-bar { background: #007AFF; width: 160px; }
+            .level-info { color: #FFFFFF; font-size: 14px; white-space: nowrap; }
+
+            .pyramid-description, .chart-description { margin-top: 16px; font-size: 12px; color: #C9CDD4; line-height: 1.5; }
+
+            .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+            .ok { background: var(--success-color); }
+            .warn { background: var(--danger-color); }
+            .mid { background: var(--warning-color); }
+
+            /* 四象限分析样式 */
+            .quadrant-analysis { margin-top: 24px; }
+            .quadrant-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 20px; }
+            .quadrant-card { background: var(--dark-200); border-radius: var(--border-radius); padding: 16px; border-left: 4px solid; }
+            .star-club { border-left-color: #27ae60; }
+            .potential-club { border-left-color: #3498db; }
+            .stable-club { border-left-color: #f39c12; }
+            .improvement-club { border-left-color: #e74c3c; }
+            .quadrant-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+            .quadrant-header h4 { color: #fff; font-size: 14px; font-weight: 600; margin: 0; }
+            .quadrant-desc { color: #C9CDD4; font-size: 12px; line-height: 1.5; margin: 0; }
+
+            /* 赋能建议样式 */
+            .empowerment-section { margin-top: 32px; }
+            .section-header { margin-bottom: 24px; }
+            .section-title { color: #fff; font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 12px; margin: 0; }
+            .section-title i { color: #165DFF; }
+            
+            .tab-navigation { display: flex; gap: 2px; margin-bottom: 24px; background: var(--dark-200); border-radius: var(--border-radius); padding: 4px; }
+            .tab-btn { flex: 1; padding: 12px 16px; background: transparent; border: none; color: #C9CDD4; font-size: 14px; font-weight: 500; border-radius: 4px; cursor: pointer; transition: all 0.2s ease; }
+            .tab-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+            .tab-btn.active { background: #165DFF; color: #fff; }
+            
+            .tab-content { display: none; }
+            .tab-content.active { display: block; }
+            .tab-content-title { color: #fff; font-size: 20px; font-weight: 600; margin: 0 0 20px; }
+            
+            .suggestions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+            .suggestion-card { background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); padding: 20px; border-left: 4px solid; }
+            .training-suggestion { border-left-color: #32D74B; }
+            .operation-suggestion { border-left-color: #007AFF; }
+            .sustainability-suggestion { border-left-color: #AF52DE; }
+            .suggestion-card h4 { color: #fff; font-size: 16px; font-weight: 600; margin: 0 0 12px; }
+            .suggestion-card p { color: #C9CDD4; font-size: 14px; line-height: 1.6; margin: 0; }
+            
+            .success-factors { background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); padding: 20px; }
+            .success-factors h4 { color: #fff; font-size: 16px; font-weight: 600; margin: 0 0 16px; }
+            .factors-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .factor-item { display: flex; align-items: center; gap: 8px; color: #C9CDD4; font-size: 14px; }
+            .factor-item i { color: #32D74B; font-size: 16px; }
+
+            @media (max-width: 1200px) { 
+                .charts-row { grid-template-columns: 1fr; } 
+                .stats-row { grid-template-columns: repeat(2, 1fr); } 
+                .quadrant-cards { grid-template-columns: 1fr; }
+                .suggestions-grid { grid-template-columns: 1fr; }
+                .factors-grid { grid-template-columns: 1fr; }
+            }
+            @media (max-width: 768px) { 
+                .stats-row { grid-template-columns: 1fr; } 
+                .tab-navigation { flex-direction: column; }
+            }
+            /* 第四部分：重大事件和违规事项样式 */
+            .events-violations-section {
+                margin-top: 30px;
+            }
+
+            .events-violations-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+
+            .events-card, .violations-card {
+                height: fit-content;
+            }
+
+            .events-list, .violations-list {
+                margin-top: 20px;
+            }
+
+            .event-item, .violation-item {
+                display: flex;
+                align-items: flex-start;
+                padding: 15px 0;
+                border-bottom: 1px solid #3a3a3a;
+                gap: 15px;
+            }
+
+            .event-item:last-child, .violation-item:last-child {
+                border-bottom: none;
+            }
+
+            .event-status, .violation-status {
+                flex-shrink: 0;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 2px;
+            }
+
+            .event-status.success {
+                color: #4CAF50;
+            }
+
+            .violation-status.warning {
+                color: #FF9800;
+            }
+
+            .event-content, .violation-content {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .event-title, .violation-title {
+                font-size: 14px;
+                font-weight: 500;
+                color: #ffffff;
+                margin-bottom: 5px;
+                line-height: 1.4;
+            }
+
+            .event-description, .violation-description {
+                font-size: 12px;
+                color: #999999;
+                line-height: 1.4;
+            }
+
+            .event-date, .violation-date {
+                flex-shrink: 0;
+                font-size: 12px;
+                color: #666666;
+                margin-top: 2px;
+            }
+
+            .view-all-link {
+                margin-top: 20px;
+                text-align: center;
+                padding-top: 15px;
+                border-top: 1px solid #3a3a3a;
+            }
+
+            .view-all-btn {
+                color: #007bff;
+                text-decoration: none;
+                font-size: 14px;
+                transition: color 0.3s ease;
+            }
+
+            .view-all-btn:hover {
+                color: #0056b3;
+                text-decoration: underline;
+            }
+
+            /* AG俱乐部违规事项公告样式 */
+            .ag-violations-announcement {
+                margin-top: 30px;
+                border: 2px solid #ff4444;
+                background: linear-gradient(135deg, rgba(255, 68, 68, 0.1) 0%, rgba(255, 68, 68, 0.05) 100%);
+            }
+
+            .ag-violations-announcement .section-title {
+                color: #ff4444;
+                font-weight: 700;
+            }
+
+            .ag-announcement-content {
+                margin-top: 20px;
+            }
+
+            .announcement-item {
+                display: flex;
+                align-items: flex-start;
+                padding: 15px 0;
+                border-bottom: 1px solid rgba(255, 68, 68, 0.2);
+                gap: 15px;
+            }
+
+            .announcement-item:last-child {
+                border-bottom: none;
+            }
+
+            .announcement-status {
+                flex-shrink: 0;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 2px;
+            }
+
+            .announcement-status.critical {
+                color: #ff4444;
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.6; }
+                100% { opacity: 1; }
+            }
+
+            .announcement-content {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .announcement-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: #ff4444;
+                margin-bottom: 5px;
+                line-height: 1.4;
+            }
+
+            .announcement-description {
+                font-size: 12px;
+                color: #cccccc;
+                line-height: 1.4;
+            }
+
+            .ag-violations-announcement .view-all-btn {
+                color: #ff4444;
+                font-weight: 600;
+            }
+
+            .ag-violations-announcement .view-all-btn:hover {
+                color: #ff6666;
+                text-decoration: underline;
+            }
+
+            /* 响应式设计 */
+            @media (max-width: 1200px) {
+                .events-violations-container {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .event-item, .violation-item {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                .event-date, .violation-date {
+                    align-self: flex-start;
+                    margin-top: 0;
+                }
+            }
+
+        </style>
+
+        <!-- JavaScript for Charts -->
+        <script>
+            // 等待ECharts加载完成
+            function waitForECharts(callback) {
+                if (typeof echarts !== 'undefined') {
+                    callback();
+                } else {
+                    setTimeout(() => waitForECharts(callback), 100);
+                }
+            }
+
+            // 初始化席位价值分布图表
+            waitForECharts(() => {
+                const distributionChart = echarts.init(document.getElementById('distributionChart'));
+                const distributionOption = {
+                    backgroundColor: 'transparent',
+                    grid: { top: 20, right: 20, bottom: 40, left: 60 },
+                    xAxis: {
+                        type: 'category',
+                        data: ['0-500万', '500-1000万', '1000-1500万', '1500-2000万', '2000万+'],
+                        axisLine: { lineStyle: { color: '#4A5568' } },
+                        axisLabel: { color: '#C9CDD4', fontSize: 12 }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLine: { lineStyle: { color: '#4A5568' } },
+                        axisLabel: { color: '#C9CDD4', fontSize: 12 },
+                        splitLine: { lineStyle: { color: '#2D3748', type: 'dashed' } }
+                    },
+                    series: [{
+                        type: 'bar',
+                        data: [
+                            { value: 2, itemStyle: { color: '#e74c3c' } },
+                            { value: 3, itemStyle: { color: '#f39c12' } },
+                            { value: 6, itemStyle: { color: '#3498db' } },
+                            { value: 4, itemStyle: { color: '#2ecc71' } },
+                            { value: 2, itemStyle: { color: '#9b59b6' } }
+                        ],
+                        barWidth: '60%',
+                        label: {
+                            show: true,
+                            position: 'top',
+                            color: '#C9CDD4',
+                            fontSize: 12,
+                            formatter: '{c}家'
+                        }
+                    }],
+                    tooltip: {
+                        trigger: 'axis',
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        borderColor: '#4A5568',
+                        textStyle: { color: '#fff' },
+                        formatter: function(params) {
+                            const data = params[0];
+                            const total = 17;
+                            const percentage = ((data.value / total) * 100).toFixed(1);
+                            return `${data.name}<br/>俱乐部数量: ${data.value}家<br/>占比: ${percentage}%`;
+                        }
+                    }
+                };
+                distributionChart.setOption(distributionOption);
+
+                // 初始化四象限散点图
+                const quadrantChart = echarts.init(document.getElementById('quadrantChart'));
+                const quadrantOption = {
+                    backgroundColor: 'transparent',
+                    grid: { top: 60, right: 40, bottom: 60, left: 60 },
+                    legend: {
+                        data: ['明星俱乐部', '潜力俱乐部', '稳健俱乐部', '待提升俱乐部'],
+                        top: 10,
+                        textStyle: { color: '#C9CDD4' },
+                        itemWidth: 14,
+                        itemHeight: 14
+                    },
+                    xAxis: {
+                        type: 'value',
+                        name: '赛训能力',
+                        nameLocation: 'middle',
+                        nameGap: 30,
+                        nameTextStyle: { color: '#C9CDD4' },
+                        min: 0,
+                        max: 100,
+                        axisLine: { lineStyle: { color: '#4A5568' } },
+                        axisLabel: { color: '#C9CDD4', fontSize: 12 },
+                        splitLine: { lineStyle: { color: '#2D3748', type: 'dashed' } }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '运营能力',
+                        nameLocation: 'middle',
+                        nameGap: 40,
+                        nameTextStyle: { color: '#C9CDD4' },
+                        min: 0,
+                        max: 100,
+                        axisLine: { lineStyle: { color: '#4A5568' } },
+                        axisLabel: { color: '#C9CDD4', fontSize: 12 },
+                        splitLine: { lineStyle: { color: '#2D3748', type: 'dashed' } }
+                    },
+                    series: [
+                        {
+                            name: '明星俱乐部',
+                            type: 'scatter',
+                            data: [[85, 90], [80, 85], [88, 87]],
+                            symbolSize: 12,
+                            itemStyle: { color: '#27ae60' }
+                        },
+                        {
+                            name: '潜力俱乐部',
+                            type: 'scatter',
+                            data: [[75, 60], [70, 55], [78, 58]],
+                            symbolSize: 12,
+                            itemStyle: { color: '#f39c12' }
+                        },
+                        {
+                            name: '稳健俱乐部',
+                            type: 'scatter',
+                            data: [[45, 80], [40, 85], [48, 82]],
+                            symbolSize: 12,
+                            itemStyle: { color: '#3498db' }
+                        },
+                        {
+                            name: '待提升俱乐部',
+                            type: 'scatter',
+                            data: [[35, 35], [30, 40], [38, 32]],
+                            symbolSize: 12,
+                            itemStyle: { color: '#e74c3c' }
+                        }
+                    ],
+                    tooltip: {
+                        trigger: 'item',
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        borderColor: '#4A5568',
+                        textStyle: { color: '#fff' },
+                        formatter: function(params) {
+                            return `${params.seriesName}<br/>赛训能力: ${params.data[0]}<br/>运营能力: ${params.data[1]}`;
+                        }
+                    }
+                };
+                quadrantChart.setOption(quadrantOption);
+
+                // 响应式处理
+                window.addEventListener('resize', () => {
+                    distributionChart.resize();
+                    quadrantChart.resize();
+                });
+            });
+
+            // 标签页切换功能
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // 移除所有活动状态
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // 添加当前活动状态
+                    btn.classList.add('active');
+                    const tabId = btn.getAttribute('data-tab') + '-tab';
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        </script>
+    </main>
+
+    <script>
+        // 初始化席位价值分布图表
+        function initDistributionChart() {
+            const chart = echarts.init(document.getElementById('distributionChart'));
+            
+            const option = {
+                backgroundColor: 'transparent',
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['2000万+', '1500万-2000万', '1000万-1500万', '500万-1000万', '0-500万'],
+                    axisLine: {
+                        lineStyle: {
+                            color: '#4A5568'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#C9CDD4',
+                        fontSize: 12,
+                        rotate: 0
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    max: 7,
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        color: '#C9CDD4',
+                        fontSize: 12
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.1)',
+                            type: 'dashed'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'bar',
+                    data: [
+                        {value: 2, itemStyle: {color: '#FF6B35'}},
+                        {value: 3, itemStyle: {color: '#FF9500'}},
+                        {value: 5, itemStyle: {color: '#FFD60A'}},
+                        {value: 6, itemStyle: {color: '#32D74B'}},
+                        {value: 3, itemStyle: {color: '#007AFF'}}
+                    ],
+                    barWidth: '60%',
+                    label: {
+                        show: true,
+                        position: 'top',
+                        color: '#FFFFFF',
+                        fontSize: 12,
+                        fontWeight: 'bold'
+                    }
+                }],
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    borderColor: 'rgba(255,255,255,0.2)',
+                    textStyle: {
+                        color: '#FFFFFF'
+                    },
+                    formatter: function(params) {
+                        const data = params[0];
+                        const percentages = {
+                            '2000万+': '10.5%',
+                            '1500万-2000万': '15.8%',
+                            '1000万-1500万': '26.3%',
+                            '500万-1000万': '31.6%',
+                            '0-500万': '15.8%'
+                        };
+                        return `${data.name}<br/>俱乐部数量: ${data.value}家<br/>占比: ${percentages[data.name]}`;
+                    }
+                }
+            };
+            
+            chart.setOption(option);
+            
+            // 响应式调整
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // 页面加载完成后初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 等待ECharts加载完成
+            if (typeof echarts !== 'undefined') {
+                initDistributionChart();
+            } else {
+                // 如果ECharts还未加载，等待一段时间后再试
+                setTimeout(function() {
+                    if (typeof echarts !== 'undefined') {
+                        initDistributionChart();
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+
+    <script>
+        // 弹窗功能
+        function openModal() {
+            document.getElementById('recordModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        }
+
+        function closeModal() {
+            document.getElementById('recordModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // 恢复滚动
+        }
+
+        // 点击关闭按钮关闭弹窗
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('recordModal');
+            const closeBtn = document.querySelector('.modal-close');
+            
+            // 点击关闭按钮
+            if (closeBtn) {
+                closeBtn.onclick = closeModal;
+            }
+            
+            // 点击背景关闭弹窗
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            }
+            
+            // ESC键关闭弹窗
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.style.display === 'block') {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+
+    <!-- 弹窗模态框 -->
+    <div id="recordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">全部记录详情</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="record-list">
+                    <div class="record-item">
+                        <div class="record-date">2024-12-15</div>
+                        <div class="record-content">4AM俱乐部完成新赛季选手签约，引入两名韩援选手</div>
+                        <div class="record-type">选手变动</div>
+                    </div>
+                    <div class="record-item">
+                        <div class="record-date">2024-12-10</div>
+                        <div class="record-content">NV-XQF俱乐部获得2024年度最佳运营奖</div>
+                        <div class="record-type">荣誉奖项</div>
+                    </div>
+                    <div class="record-item">
+                        <div class="record-date">2024-12-08</div>
+                        <div class="record-content">TC俱乐部完成主场迁移，新场馆正式启用</div>
+                        <div class="record-type">场馆变更</div>
+                    </div>
+                    <div class="record-item">
+                        <div class="record-date">2024-12-05</div>
+                        <div class="record-content">AG俱乐部与知名品牌达成战略合作协议</div>
+                        <div class="record-type">商业合作</div>
+                    </div>
+                    <div class="record-item">
+                        <div class="record-date">2024-12-01</div>
+                        <div class="record-content">联盟发布新赛季赛制调整公告</div>
+                        <div class="record-type">赛制变更</div>
+                    </div>
+                    <div class="record-item">
+                        <div class="record-date">2024-11-28</div>
+                        <div class="record-content">Tianba俱乐部因违规操作被处以警告处分</div>
+                        <div class="record-type">违规处罚</div>
+                    </div>
+                    <div class="record-item">
+                        <div class="record-date">2024-11-25</div>
+                        <div class="record-content">联盟总收入突破5亿元大关</div>
+                        <div class="record-type">财务数据</div>
+                    </div>
+                    <div class="record-item">
+                        <div class="record-date">2024-11-20</div>
+                        <div class="record-content">新俱乐部申请加入联盟审核通过</div>
+                        <div class="record-type">俱乐部变动</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="js/common.js"></script>
+</body>
+</html>
+

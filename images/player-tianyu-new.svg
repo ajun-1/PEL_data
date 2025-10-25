@@ -1,0 +1,85 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#74b9ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a29bfe;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="faceGradient5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffeaa7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fdcb6e;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="skyGradient" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#74b9ff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#0984e3;stop-opacity:0.3" />
+    </radialGradient>
+    <filter id="shadow5" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGradient5)" stroke="#fff" stroke-width="4" filter="url(#shadow5)"/>
+  
+  <!-- Sky Background -->
+  <circle cx="60" cy="40" r="45" fill="url(#skyGradient)"/>
+  
+  <!-- Clouds -->
+  <g fill="#fff" opacity="0.6">
+    <ellipse cx="35" cy="30" rx="8" ry="4"/>
+    <ellipse cx="30" cy="32" rx="6" ry="3"/>
+    <ellipse cx="40" cy="32" rx="5" ry="3"/>
+    
+    <ellipse cx="85" cy="35" rx="6" ry="3"/>
+    <ellipse cx="82" cy="37" rx="4" ry="2"/>
+    <ellipse cx="88" cy="37" rx="4" ry="2"/>
+  </g>
+  
+  <!-- Face -->
+  <circle cx="60" cy="50" r="24" fill="url(#faceGradient5)"/>
+  
+  <!-- Eyes -->
+  <circle cx="53" cy="45" r="3" fill="#2d3436"/>
+  <circle cx="67" cy="45" r="3" fill="#2d3436"/>
+  <circle cx="54" cy="44" r="1" fill="#fff"/>
+  <circle cx="68" cy="44" r="1" fill="#fff"/>
+  
+  <!-- Nose -->
+  <ellipse cx="60" cy="52" rx="1.5" ry="2" fill="#e17055"/>
+  
+  <!-- Mouth -->
+  <path d="M 55 58 Q 60 62 65 58" stroke="#2d3436" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Hair (Flowing) -->
+  <path d="M 36 45 Q 38 25 50 30 Q 60 20 70 30 Q 82 25 84 45 Q 80 30 75 32 Q 70 28 65 30 Q 60 25 55 30 Q 50 28 45 32 Q 40 30 36 45" fill="#2d3436"/>
+  
+  <!-- Hair Highlights -->
+  <path d="M 45 35 Q 50 32 55 35" stroke="#636e72" stroke-width="1" fill="none"/>
+  <path d="M 65 35 Q 70 32 75 35" stroke="#636e72" stroke-width="1" fill="none"/>
+  
+  <!-- Body/Shirt -->
+  <ellipse cx="60" cy="85" rx="35" ry="25" fill="#0984e3"/>
+  <rect x="25" y="75" width="70" height="30" fill="#0984e3" rx="5"/>
+  
+  <!-- Wing Pattern on Shirt -->
+  <g fill="#fff" opacity="0.4">
+    <path d="M 45 82 Q 50 78 55 82 Q 50 86 45 82"/>
+    <path d="M 65 82 Q 70 78 75 82 Q 70 86 65 82"/>
+  </g>
+  
+  <!-- Stars -->
+  <g fill="#fdcb6e">
+    <polygon points="25,25 27,30 32,30 28,33 30,38 25,35 20,38 22,33 18,30 23,30" opacity="0.8"/>
+    <polygon points="90,25 92,30 97,30 93,33 95,38 90,35 85,38 87,33 83,30 88,30" opacity="0.6"/>
+    <polygon points="30,95 32,100 37,100 33,103 35,108 30,105 25,108 27,103 23,100 28,100" opacity="0.7"/>
+  </g>
+  
+  <!-- Gaming Elements -->
+  <circle cx="85" cy="90" r="8" fill="#74b9ff" opacity="0.8"/>
+  <text x="85" y="94" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">天</text>
+  
+  <!-- Feather -->
+  <g transform="translate(95,70) rotate(30)">
+    <ellipse cx="0" cy="0" rx="2" ry="8" fill="#a29bfe" opacity="0.7"/>
+    <line x1="0" y1="-6" x2="0" y2="6" stroke="#6c5ce7" stroke-width="0.5"/>
+  </g>
+</svg>

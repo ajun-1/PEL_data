@@ -1,0 +1,51 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="faceGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffeaa7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fab1a0;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow1" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGradient1)" stroke="#fff" stroke-width="4" filter="url(#shadow1)"/>
+  
+  <!-- Face -->
+  <circle cx="60" cy="50" r="25" fill="url(#faceGradient1)"/>
+  
+  <!-- Eyes -->
+  <circle cx="52" cy="45" r="3" fill="#2d3436"/>
+  <circle cx="68" cy="45" r="3" fill="#2d3436"/>
+  <circle cx="53" cy="44" r="1" fill="#fff"/>
+  <circle cx="69" cy="44" r="1" fill="#fff"/>
+  
+  <!-- Nose -->
+  <ellipse cx="60" cy="52" rx="1.5" ry="2" fill="#e17055"/>
+  
+  <!-- Mouth -->
+  <path d="M 55 58 Q 60 62 65 58" stroke="#2d3436" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Hair -->
+  <path d="M 35 45 Q 40 25 60 30 Q 80 25 85 45 Q 82 35 75 35 Q 70 30 60 32 Q 50 30 45 35 Q 38 35 35 45" fill="#2d3436"/>
+  
+  <!-- Body/Shirt -->
+  <ellipse cx="60" cy="85" rx="35" ry="25" fill="#0984e3"/>
+  <rect x="25" y="75" width="70" height="30" fill="#0984e3" rx="5"/>
+  
+  <!-- Gaming Elements -->
+  <circle cx="45" cy="25" r="8" fill="#00b894" opacity="0.8"/>
+  <text x="45" y="30" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">A</text>
+  
+  <circle cx="75" cy="25" r="8" fill="#e84393" opacity="0.8"/>
+  <text x="75" y="30" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">J</text>
+  
+  <!-- Decorative Elements -->
+  <polygon points="20,20 25,15 30,20 25,25" fill="#fdcb6e" opacity="0.7"/>
+  <polygon points="90,95 95,90 100,95 95,100" fill="#fd79a8" opacity="0.7"/>
+</svg>

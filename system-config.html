@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统配置 - PEL联盟生态数据大屏</title>
+    
+    <!-- 外部资源 -->
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+    
+    <!-- 本地样式 -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- 顶部导航：由 common.js 动态生成 -->
+    <header class="top-nav"></header>
+
+    <!-- 侧边栏导航 -->
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">数据管理</div>
+                <div class="sidebar-menu">
+                    <a href="import-log.html" class="sidebar-item" data-page="import-log">
+                        <i class="fa fa-upload"></i>
+                        <span>导入日志</span>
+                    </a>
+                    <a href="data-import.html" class="sidebar-item" data-page="data-import">
+                        <i class="fa fa-database"></i>
+                        <span>数据导入</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">生态分析</div>
+                <div class="sidebar-menu">
+                    <a href="alliance-overview.html" class="sidebar-item" data-page="alliance-overview">
+                        <i class="fa fa-dashboard"></i>
+                        <span>联盟生态</span>
+                    </a>
+                    <a href="club-analysis.html" class="sidebar-item" data-page="club-analysis">
+                        <i class="fa fa-users"></i>
+                        <span>俱乐部生态</span>
+                    </a>
+                    <a href="club-detail.html" class="sidebar-item" data-page="club-detail">
+                        <i class="fa fa-building"></i>
+                        <span>俱乐部个体评估</span>
+                    </a>
+                    <a href="player-management.html" class="sidebar-item" data-page="player-management">
+                        <i class="fa fa-user-circle-o"></i>
+                        <span>选手管理</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">业务分析</div>
+                <div class="sidebar-menu">
+                    <a href="match-analysis.html" class="sidebar-item" data-page="match-analysis">
+                        <i class="fa fa-trophy"></i>
+                        <span>赛事分析</span>
+                    </a>
+                    <a href="financial-report.html" class="sidebar-item" data-page="financial-report">
+                        <i class="fa fa-line-chart"></i>
+                        <span>财务报告</span>
+                    </a>
+                    <a href="brand-value.html" class="sidebar-item" data-page="brand-value">
+                        <i class="fa fa-crown"></i>
+                        <span>品牌价值</span>
+                    </a>
+                    <a href="market-analysis.html" class="sidebar-item" data-page="market-analysis">
+                        <i class="fa fa-bar-chart"></i>
+                        <span>市场分析</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">系统设置</div>
+                <div class="sidebar-menu">
+                    <a href="system-config.html" class="sidebar-item active" data-page="system-config">
+                        <i class="fa fa-cog"></i>
+                        <span>系统配置</span>
+                    </a>
+                    <a href="user-management.html" class="sidebar-item" data-page="user-management">
+                        <i class="fa fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h2 class="page-title">系统配置</h2>
+            <p class="page-subtitle">管理系统参数、数据源配置和运行环境设置</p>
+        </div>
+
+        <!-- 配置导航 -->
+        <div class="config-nav">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="general">
+                    <i class="fa fa-cog"></i>
+                    基础配置
+                </button>
+                <button class="nav-tab" data-tab="database">
+                    <i class="fa fa-database"></i>
+                    数据库配置
+                </button>
+                <button class="nav-tab" data-tab="api">
+                    <i class="fa fa-plug"></i>
+                    API配置
+                </button>
+                <button class="nav-tab" data-tab="security">
+                    <i class="fa fa-shield"></i>
+                    安全配置
+                </button>
+                <button class="nav-tab" data-tab="notification">
+                    <i class="fa fa-bell"></i>
+                    通知配置
+                </button>
+                <button class="nav-tab" data-tab="backup">
+                    <i class="fa fa-archive"></i>
+                    备份配置
+                </button>
+            </div>
+        </div>
+
+        <!-- 基础配置 -->
+        <div class="config-panel active" id="general-panel">
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-info-circle"></i>
+                        系统信息
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">系统名称</label>
+                        <input type="text" class="config-input" value="PEL联盟生态数据大屏" readonly>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">系统版本</label>
+                        <input type="text" class="config-input" value="v2.1.0" readonly>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">部署环境</label>
+                        <select class="config-select">
+                            <option value="production">生产环境</option>
+                            <option value="staging">测试环境</option>
+                            <option value="development">开发环境</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">时区设置</label>
+                        <select class="config-select">
+                            <option value="Asia/Shanghai">Asia/Shanghai (UTC+8)</option>
+                            <option value="UTC">UTC (UTC+0)</option>
+                            <option value="America/New_York">America/New_York (UTC-5)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-display"></i>
+                        显示设置
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">默认语言</label>
+                        <select class="config-select">
+                            <option value="zh-CN">简体中文</option>
+                            <option value="en-US">English</option>
+                            <option value="ja-JP">日本語</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">主题模式</label>
+                        <select class="config-select">
+                            <option value="dark">深色模式</option>
+                            <option value="light">浅色模式</option>
+                            <option value="auto">跟随系统</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">数据刷新间隔</label>
+                        <select class="config-select">
+                            <option value="30">30秒</option>
+                            <option value="60">1分钟</option>
+                            <option value="300">5分钟</option>
+                            <option value="600">10分钟</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">页面缓存时间</label>
+                        <select class="config-select">
+                            <option value="300">5分钟</option>
+                            <option value="600">10分钟</option>
+                            <option value="1800">30分钟</option>
+                            <option value="3600">1小时</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-performance"></i>
+                        性能设置
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">最大并发连接数</label>
+                        <input type="number" class="config-input" value="1000" min="100" max="10000">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">请求超时时间(秒)</label>
+                        <input type="number" class="config-input" value="30" min="5" max="300">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">内存使用限制(MB)</label>
+                        <input type="number" class="config-input" value="2048" min="512" max="8192">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">日志保留天数</label>
+                        <input type="number" class="config-input" value="30" min="7" max="365">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据库配置 -->
+        <div class="config-panel" id="database-panel">
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-server"></i>
+                        主数据库配置
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">数据库类型</label>
+                        <select class="config-select">
+                            <option value="mysql">MySQL</option>
+                            <option value="postgresql">PostgreSQL</option>
+                            <option value="mongodb">MongoDB</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">服务器地址</label>
+                        <input type="text" class="config-input" value="localhost" placeholder="数据库服务器地址">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">端口号</label>
+                        <input type="number" class="config-input" value="3306" min="1" max="65535">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">数据库名称</label>
+                        <input type="text" class="config-input" value="pel_ecosystem" placeholder="数据库名称">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">用户名</label>
+                        <input type="text" class="config-input" value="pel_user" placeholder="数据库用户名">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">密码</label>
+                        <input type="password" class="config-input" value="********" placeholder="数据库密码">
+                    </div>
+                </div>
+                <div class="config-actions">
+                    <button class="btn btn-secondary" onclick="testDatabaseConnection()">
+                        <i class="fa fa-plug"></i>
+                        测试连接
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-hdd-o"></i>
+                        Redis缓存配置
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">Redis服务器</label>
+                        <input type="text" class="config-input" value="localhost" placeholder="Redis服务器地址">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">端口号</label>
+                        <input type="number" class="config-input" value="6379" min="1" max="65535">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">密码</label>
+                        <input type="password" class="config-input" placeholder="Redis密码(可选)">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">数据库索引</label>
+                        <input type="number" class="config-input" value="0" min="0" max="15">
+                    </div>
+                </div>
+                <div class="config-actions">
+                    <button class="btn btn-secondary" onclick="testRedisConnection()">
+                        <i class="fa fa-plug"></i>
+                        测试连接
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- API配置 -->
+        <div class="config-panel" id="api-panel">
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-exchange"></i>
+                        外部API配置
+                    </h3>
+                </div>
+                <div class="api-list">
+                    <div class="api-item">
+                        <div class="api-header">
+                            <div class="api-info">
+                                <div class="api-name">游戏数据API</div>
+                                <div class="api-url">https://api.game-data.com/v1</div>
+                            </div>
+                            <div class="api-status active">
+                                <i class="fa fa-circle"></i>
+                                已连接
+                            </div>
+                        </div>
+                        <div class="api-config">
+                            <div class="config-row">
+                                <div class="config-item">
+                                    <label class="config-label">API Key</label>
+                                    <input type="password" class="config-input" value="sk-****************************">
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">请求频率限制</label>
+                                    <select class="config-select">
+                                        <option value="100">100次/分钟</option>
+                                        <option value="500">500次/分钟</option>
+                                        <option value="1000">1000次/分钟</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="api-item">
+                        <div class="api-header">
+                            <div class="api-info">
+                                <div class="api-name">赛事数据API</div>
+                                <div class="api-url">https://api.esports-data.com/v2</div>
+                            </div>
+                            <div class="api-status inactive">
+                                <i class="fa fa-circle"></i>
+                                未连接
+                            </div>
+                        </div>
+                        <div class="api-config">
+                            <div class="config-row">
+                                <div class="config-item">
+                                    <label class="config-label">API Key</label>
+                                    <input type="password" class="config-input" placeholder="请输入API Key">
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">请求频率限制</label>
+                                    <select class="config-select">
+                                        <option value="50">50次/分钟</option>
+                                        <option value="200">200次/分钟</option>
+                                        <option value="500">500次/分钟</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="api-item">
+                        <div class="api-header">
+                            <div class="api-info">
+                                <div class="api-name">财务数据API</div>
+                                <div class="api-url">https://api.financial-data.com/v1</div>
+                            </div>
+                            <div class="api-status active">
+                                <i class="fa fa-circle"></i>
+                                已连接
+                            </div>
+                        </div>
+                        <div class="api-config">
+                            <div class="config-row">
+                                <div class="config-item">
+                                    <label class="config-label">API Key</label>
+                                    <input type="password" class="config-input" value="fd-****************************">
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">请求频率限制</label>
+                                    <select class="config-select">
+                                        <option value="20">20次/分钟</option>
+                                        <option value="100">100次/分钟</option>
+                                        <option value="300">300次/分钟</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 安全配置 -->
+        <div class="config-panel" id="security-panel">
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-lock"></i>
+                        访问控制
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">启用IP白名单</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="ipWhitelist" checked>
+                            <label for="ipWhitelist" class="toggle-label"></label>
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">会话超时时间(分钟)</label>
+                        <input type="number" class="config-input" value="30" min="5" max="480">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">最大登录尝试次数</label>
+                        <input type="number" class="config-input" value="5" min="3" max="10">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">账户锁定时间(分钟)</label>
+                        <input type="number" class="config-input" value="15" min="5" max="60">
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-key"></i>
+                        密码策略
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">最小密码长度</label>
+                        <input type="number" class="config-input" value="8" min="6" max="32">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">密码复杂度要求</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" checked>
+                                <span class="checkmark"></span>
+                                包含大写字母
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" checked>
+                                <span class="checkmark"></span>
+                                包含小写字母
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" checked>
+                                <span class="checkmark"></span>
+                                包含数字
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox">
+                                <span class="checkmark"></span>
+                                包含特殊字符
+                            </label>
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">密码有效期(天)</label>
+                        <input type="number" class="config-input" value="90" min="30" max="365">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">密码历史记录</label>
+                        <input type="number" class="config-input" value="5" min="1" max="10">
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-certificate"></i>
+                        SSL/TLS配置
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">强制HTTPS</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="forceHttps" checked>
+                            <label for="forceHttps" class="toggle-label"></label>
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">SSL证书路径</label>
+                        <input type="text" class="config-input" value="/etc/ssl/certs/pel.crt" placeholder="SSL证书文件路径">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">SSL私钥路径</label>
+                        <input type="text" class="config-input" value="/etc/ssl/private/pel.key" placeholder="SSL私钥文件路径">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">证书到期时间</label>
+                        <input type="date" class="config-input" value="2024-12-31" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 通知配置 -->
+        <div class="config-panel" id="notification-panel">
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-envelope"></i>
+                        邮件通知
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">SMTP服务器</label>
+                        <input type="text" class="config-input" value="smtp.gmail.com" placeholder="SMTP服务器地址">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">端口号</label>
+                        <input type="number" class="config-input" value="587" min="1" max="65535">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">发件人邮箱</label>
+                        <input type="email" class="config-input" value="noreply@pel.com" placeholder="发件人邮箱地址">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">邮箱密码</label>
+                        <input type="password" class="config-input" value="********" placeholder="邮箱密码或应用密码">
+                    </div>
+                </div>
+                <div class="config-actions">
+                    <button class="btn btn-secondary" onclick="testEmailConfig()">
+                        <i class="fa fa-paper-plane"></i>
+                        发送测试邮件
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-mobile"></i>
+                        短信通知
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">短信服务商</label>
+                        <select class="config-select">
+                            <option value="aliyun">阿里云短信</option>
+                            <option value="tencent">腾讯云短信</option>
+                            <option value="huawei">华为云短信</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">Access Key ID</label>
+                        <input type="text" class="config-input" value="LTAI**********************" placeholder="Access Key ID">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">Access Key Secret</label>
+                        <input type="password" class="config-input" value="************************" placeholder="Access Key Secret">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">短信签名</label>
+                        <input type="text" class="config-input" value="PEL联盟" placeholder="短信签名">
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-bell-o"></i>
+                        通知规则
+                    </h3>
+                </div>
+                <div class="notification-rules">
+                    <div class="rule-item">
+                        <div class="rule-header">
+                            <div class="rule-info">
+                                <div class="rule-name">系统异常告警</div>
+                                <div class="rule-desc">系统出现异常时发送通知</div>
+                            </div>
+                            <div class="rule-toggle">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="systemAlert" checked>
+                                    <label for="systemAlert" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rule-config">
+                            <div class="notification-methods">
+                                <label class="method-item">
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                    邮件通知
+                                </label>
+                                <label class="method-item">
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                    短信通知
+                                </label>
+                                <label class="method-item">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                    微信通知
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rule-item">
+                        <div class="rule-header">
+                            <div class="rule-info">
+                                <div class="rule-name">数据导入完成</div>
+                                <div class="rule-desc">数据导入任务完成时发送通知</div>
+                            </div>
+                            <div class="rule-toggle">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="importComplete" checked>
+                                    <label for="importComplete" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rule-config">
+                            <div class="notification-methods">
+                                <label class="method-item">
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                    邮件通知
+                                </label>
+                                <label class="method-item">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                    短信通知
+                                </label>
+                                <label class="method-item">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                    微信通知
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rule-item">
+                        <div class="rule-header">
+                            <div class="rule-info">
+                                <div class="rule-name">定期报告</div>
+                                <div class="rule-desc">定期发送系统运行报告</div>
+                            </div>
+                            <div class="rule-toggle">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="periodicReport">
+                                    <label for="periodicReport" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rule-config">
+                            <div class="notification-methods">
+                                <label class="method-item">
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                    邮件通知
+                                </label>
+                                <label class="method-item">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                    短信通知
+                                </label>
+                                <label class="method-item">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                    微信通知
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 备份配置 -->
+        <div class="config-panel" id="backup-panel">
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-cloud-upload"></i>
+                        自动备份
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">启用自动备份</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="autoBackup" checked>
+                            <label for="autoBackup" class="toggle-label"></label>
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">备份频率</label>
+                        <select class="config-select">
+                            <option value="daily">每日备份</option>
+                            <option value="weekly">每周备份</option>
+                            <option value="monthly">每月备份</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">备份时间</label>
+                        <input type="time" class="config-input" value="02:00">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">保留备份数量</label>
+                        <input type="number" class="config-input" value="7" min="1" max="30">
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-folder-open"></i>
+                        备份存储
+                    </h3>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">存储类型</label>
+                        <select class="config-select">
+                            <option value="local">本地存储</option>
+                            <option value="oss">阿里云OSS</option>
+                            <option value="cos">腾讯云COS</option>
+                            <option value="s3">AWS S3</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">存储路径</label>
+                        <input type="text" class="config-input" value="/data/backups" placeholder="备份存储路径">
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">压缩格式</label>
+                        <select class="config-select">
+                            <option value="zip">ZIP</option>
+                            <option value="tar.gz">TAR.GZ</option>
+                            <option value="7z">7Z</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-label">加密备份</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="encryptBackup" checked>
+                            <label for="encryptBackup" class="toggle-label"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fa fa-history"></i>
+                        备份历史
+                    </h3>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="createBackup()">
+                            <i class="fa fa-plus"></i>
+                            立即备份
+                        </button>
+                    </div>
+                </div>
+                <div class="backup-history">
+                    <div class="backup-item">
+                        <div class="backup-info">
+                            <div class="backup-name">backup_2023-06-15_02-00-00.zip</div>
+                            <div class="backup-details">
+                                <span class="backup-size">2.3 GB</span>
+                                <span class="backup-date">2023-06-15 02:00:00</span>
+                                <span class="backup-type">自动备份</span>
+                            </div>
+                        </div>
+                        <div class="backup-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="downloadBackup('backup_2023-06-15_02-00-00.zip')">
+                                <i class="fa fa-download"></i>
+                                下载
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick="restoreBackup('backup_2023-06-15_02-00-00.zip')">
+                                <i class="fa fa-undo"></i>
+                                恢复
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteBackup('backup_2023-06-15_02-00-00.zip')">
+                                <i class="fa fa-trash"></i>
+                                删除
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="backup-item">
+                        <div class="backup-info">
+                            <div class="backup-name">backup_2023-06-14_02-00-00.zip</div>
+                            <div class="backup-details">
+                                <span class="backup-size">2.2 GB</span>
+                                <span class="backup-date">2023-06-14 02:00:00</span>
+                                <span class="backup-type">自动备份</span>
+                            </div>
+                        </div>
+                        <div class="backup-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="downloadBackup('backup_2023-06-14_02-00-00.zip')">
+                                <i class="fa fa-download"></i>
+                                下载
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick="restoreBackup('backup_2023-06-14_02-00-00.zip')">
+                                <i class="fa fa-undo"></i>
+                                恢复
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteBackup('backup_2023-06-14_02-00-00.zip')">
+                                <i class="fa fa-trash"></i>
+                                删除
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="backup-item">
+                        <div class="backup-info">
+                            <div class="backup-name">backup_manual_2023-06-13_15-30-00.zip</div>
+                            <div class="backup-details">
+                                <span class="backup-size">2.1 GB</span>
+                                <span class="backup-date">2023-06-13 15:30:00</span>
+                                <span class="backup-type">手动备份</span>
+                            </div>
+                        </div>
+                        <div class="backup-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="downloadBackup('backup_manual_2023-06-13_15-30-00.zip')">
+                                <i class="fa fa-download"></i>
+                                下载
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick="restoreBackup('backup_manual_2023-06-13_15-30-00.zip')">
+                                <i class="fa fa-undo"></i>
+                                恢复
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteBackup('backup_manual_2023-06-13_15-30-00.zip')">
+                                <i class="fa fa-trash"></i>
+                                删除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 保存按钮 -->
+        <div class="config-footer">
+            <div class="footer-actions">
+                <button class="btn btn-secondary" onclick="resetConfig()">
+                    <i class="fa fa-undo"></i>
+                    重置配置
+                </button>
+                <button class="btn btn-primary" onclick="saveConfig()">
+                    <i class="fa fa-save"></i>
+                    保存配置
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setupTabNavigation();
+            setupEventListeners();
+        });
+        
+        function setupTabNavigation() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const panels = document.querySelectorAll('.config-panel');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.dataset.tab;
+                    
+                    // 更新标签状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 更新面板显示
+                    panels.forEach(panel => {
+                        panel.classList.remove('active');
+                        if (panel.id === targetTab + '-panel') {
+                            panel.classList.add('active');
+                        }
+                    });
+                });
+            });
+        }
+        
+        function setupEventListeners() {
+            // 监听配置变更
+            const inputs = document.querySelectorAll('.config-input, .config-select');
+            inputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    console.log('配置已修改:', this.name || this.id, this.value);
+                });
+            });
+        }
+        
+        function testDatabaseConnection() {
+            console.log('测试数据库连接...');
+            // 模拟测试连接
+            setTimeout(() => {
+                alert('数据库连接测试成功！');
+            }, 1000);
+        }
+        
+        function testRedisConnection() {
+            console.log('测试Redis连接...');
+            // 模拟测试连接
+            setTimeout(() => {
+                alert('Redis连接测试成功！');
+            }, 1000);
+        }
+        
+        function testEmailConfig() {
+            console.log('发送测试邮件...');
+            // 模拟发送测试邮件
+            setTimeout(() => {
+                alert('测试邮件发送成功！');
+            }, 1000);
+        }
+        
+        function createBackup() {
+            console.log('创建备份...');
+            // 模拟创建备份
+            setTimeout(() => {
+                alert('备份创建成功！');
+            }, 2000);
+        }
+        
+        function downloadBackup(filename) {
+            console.log('下载备份:', filename);
+        }
+        
+        function restoreBackup(filename) {
+            if (confirm('确定要恢复此备份吗？此操作将覆盖当前数据！')) {
+                console.log('恢复备份:', filename);
+            }
+        }
+        
+        function deleteBackup(filename) {
+            if (confirm('确定要删除此备份吗？')) {
+                console.log('删除备份:', filename);
+            }
+        }
+        
+        function resetConfig() {
+            if (confirm('确定要重置所有配置吗？')) {
+                console.log('重置配置');
+                location.reload();
+            }
+        }
+        
+        function saveConfig() {
+            console.log('保存配置...');
+            // 模拟保存配置
+            setTimeout(() => {
+                alert('配置保存成功！');
+            }, 1000);
+        }
+    </script>
+    
+    <style>
+        .config-nav {
+            margin-bottom: 32px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            background: var(--dark-200);
+            padding: 8px;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--light-100);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-tab:hover {
+            background: var(--dark-300);
+            color: white;
+        }
+        
+        .nav-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .config-panel {
+            display: none;
+        }
+        
+        .config-panel.active {
+            display: block;
+        }
+        
+        .config-section {
+            background: var(--dark-100);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--dark-200);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--dark-200);
+        }
+        
+        .section-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .config-label {
+            color: var(--light-100);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .config-input,
+        .config-select {
+            padding: 12px 16px;
+            background: var(--dark-200);
+            border: 1px solid var(--dark-300);
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .config-input:focus,
+        .config-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .config-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-label {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--dark-300);
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+        
+        .toggle-label:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-label {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .toggle-label:before {
+            transform: translateX(26px);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--light-100);
+            font-size: 14px;
+        }
+        
+        .checkbox-item input {
+            display: none;
+        }
+        
+        .checkmark {
+            width: 18px;
+            height: 18px;
+            background: var(--dark-300);
+            border-radius: 3px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-item input:checked + .checkmark {
+            background: var(--primary-color);
+        }
+        
+        .checkbox-item input:checked + .checkmark:after {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .api-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .api-item {
+            background: var(--dark-200);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--dark-300);
+        }
+        
+        .api-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .api-info {
+            flex: 1;
+        }
+        
+        .api-name {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .api-url {
+            color: var(--light-100);
+            font-size: 14px;
+            font-family: monospace;
+        }
+        
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .api-status.active {
+            color: var(--success-color);
+        }
+        
+        .api-status.inactive {
+            color: var(--danger-color);
+        }
+        
+        .api-config {
+            border-top: 1px solid var(--dark-300);
+            padding-top: 16px;
+        }
+        
+        .config-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .notification-rules {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .rule-item {
+            background: var(--dark-200);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--dark-300);
+        }
+        
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .rule-info {
+            flex: 1;
+        }
+        
+        .rule-name {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .rule-desc {
+            color: var(--light-100);
+            font-size: 14px;
+        }
+        
+        .rule-config {
+            border-top: 1px solid var(--dark-300);
+            padding-top: 16px;
+        }
+        
+        .notification-methods {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .method-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--light-100);
+            font-size: 14px;
+        }
+        
+        .backup-history {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .backup-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--dark-200);
+            border-radius: 8px;
+            border: 1px solid var(--dark-300);
+        }
+        
+        .backup-info {
+            flex: 1;
+        }
+        
+        .backup-name {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+        
+        .backup-details {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--light-100);
+        }
+        
+        .backup-size {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .backup-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .config-footer {
+            background: var(--dark-100);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            border: 1px solid var(--dark-200);
+            margin-top: 32px;
+        }
+        
+        .footer-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .config-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .api-header,
+            .rule-header,
+            .backup-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .notification-methods {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .footer-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+<script src="js/common.js"></script>
+</body>
+</html>
+

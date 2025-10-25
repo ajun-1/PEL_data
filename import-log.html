@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导入日志 - PEL联盟生态数据大屏</title>
+    
+    <!-- 外部资源 -->
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+    
+    <!-- 本地样式 -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- 顶部导航：由 common.js 动态生成 -->
+    <header class="top-nav"></header>
+
+    <!-- 侧边栏导航 -->
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">主菜单</div>
+                <div class="sidebar-menu">
+                    <a href="alliance-overview.html" class="sidebar-item" data-page="alliance-overview">
+                        <i class="fa fa-globe"></i>
+                        <span>联盟生态</span>
+                    </a>
+                    <a href="club-overview.html" class="sidebar-item" data-page="club-overview">
+                        <i class="fa fa-building"></i>
+                        <span>俱乐部生态</span>
+                    </a>
+                    <a href="player-overview.html" class="sidebar-item" data-page="player-overview">
+                        <i class="fa fa-user-circle-o"></i>
+                        <span>选手生态</span>
+                    </a>
+                    <a href="match-data.html" class="sidebar-item" data-page="match-data">
+                        <i class="fa fa-trophy"></i>
+                        <span>赛事数据</span>
+                    </a>
+                    <a href="system-settings.html" class="sidebar-item" data-page="system-settings">
+                        <i class="fa fa-cog"></i>
+                        <span>系统设置</span>
+                    </a>
+                    <a href="data-import.html" class="sidebar-item" data-page="data-import">
+                        <i class="fa fa-upload"></i>
+                        <span>数据导入</span>
+                    </a>
+                    <a href="import-log.html" class="sidebar-item active" data-page="import-log">
+                        <i class="fa fa-list-alt"></i>
+                        <span>导入日志</span>
+                    </a>
+                        <i class="fa fa-database"></i>
+                        <span>数据导入</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">生态分析</div>
+                <div class="sidebar-menu">
+                    <a href="alliance-overview.html" class="sidebar-item" data-page="alliance-overview">
+                        <i class="fa fa-dashboard"></i>
+                        <span>联盟生态</span>
+                    </a>
+                    <a href="club-analysis.html" class="sidebar-item" data-page="club-analysis">
+                        <i class="fa fa-users"></i>
+                        <span>俱乐部生态</span>
+                    </a>
+                    <a href="club-detail.html" class="sidebar-item" data-page="club-detail">
+                        <i class="fa fa-building"></i>
+                        <span>俱乐部个体评估</span>
+                    </a>
+                    <a href="player-management.html" class="sidebar-item" data-page="player-management">
+                        <i class="fa fa-user-circle-o"></i>
+                        <span>选手管理</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">业务分析</div>
+                <div class="sidebar-menu">
+                    <a href="match-analysis.html" class="sidebar-item" data-page="match-analysis">
+                        <i class="fa fa-trophy"></i>
+                        <span>赛事分析</span>
+                    </a>
+                    <a href="financial-report.html" class="sidebar-item" data-page="financial-report">
+                        <i class="fa fa-line-chart"></i>
+                        <span>财务报告</span>
+                    </a>
+                    <a href="brand-value.html" class="sidebar-item" data-page="brand-value">
+                        <i class="fa fa-crown"></i>
+                        <span>品牌价值</span>
+                    </a>
+                    <a href="market-analysis.html" class="sidebar-item" data-page="market-analysis">
+                        <i class="fa fa-bar-chart"></i>
+                        <span>市场分析</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">系统设置</div>
+                <div class="sidebar-menu">
+                    <a href="system-config.html" class="sidebar-item" data-page="system-config">
+                        <i class="fa fa-cog"></i>
+                        <span>系统配置</span>
+                    </a>
+                    <a href="user-management.html" class="sidebar-item" data-page="user-management">
+                        <i class="fa fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h2 class="page-title">导入日志</h2>
+            <p class="page-subtitle">查看和管理数据导入历史记录</p>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <h3 style="color: white; font-size: 18px; font-weight: 600;">数据导入</h3>
+                <button class="btn btn-primary">
+                    <i class="fa fa-upload"></i>
+                    新建导入
+                </button>
+            </div>
+            <div class="toolbar-right">
+                <select class="select">
+                    <option value="all">全部状态</option>
+                    <option value="success">成功</option>
+                    <option value="warning">部分失败</option>
+                    <option value="error">失败</option>
+                </select>
+                <button class="btn btn-secondary">
+                    <i class="fa fa-filter"></i>
+                    筛选
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fa fa-download"></i>
+                    导出
+                </button>
+            </div>
+        </div>
+
+        <!-- 导入日志表格 -->
+        <div class="card">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>导入时间</th>
+                            <th>文件名称</th>
+                            <th>数据类型</th>
+                            <th>状态</th>
+                            <th>记录数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2023-06-15 14:30:25</td>
+                            <td>俱乐部基础数据_2025夏季赛.xlsx</td>
+                            <td>俱乐部基础数据</td>
+                            <td>
+                                <span class="status-badge status-success">成功</span>
+                            </td>
+                            <td>24</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-icon" title="查看详情">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon" title="下载">
+                                        <i class="fa fa-download"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2023-06-10 09:15:42</td>
+                            <td>选手数据_2025夏季赛.xlsx</td>
+                            <td>选手数据</td>
+                            <td>
+                                <span class="status-badge status-success">成功</span>
+                            </td>
+                            <td>256</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-icon" title="查看详情">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon" title="下载">
+                                        <i class="fa fa-download"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2023-06-05 16:42:18</td>
+                            <td>俱乐部财务数据_2025夏季赛.csv</td>
+                            <td>俱乐部财务数据</td>
+                            <td>
+                                <span class="status-badge status-warning">部分失败</span>
+                            </td>
+                            <td>19/24</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-icon" title="查看详情">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon" title="重试">
+                                        <i class="fa fa-refresh"></i>
+                                    </button>
+                                    <button class="btn-icon" title="下载">
+                                        <i class="fa fa-download"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2023-06-01 11:23:50</td>
+                            <td>赛事成绩数据_2025夏季赛.xlsx</td>
+                            <td>赛事成绩数据</td>
+                            <td>
+                                <span class="status-badge status-success">成功</span>
+                            </td>
+                            <td>128</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-icon" title="查看详情">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon" title="下载">
+                                        <i class="fa fa-download"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2023-05-28 13:45:12</td>
+                            <td>选手转会数据_2025夏季赛.xlsx</td>
+                            <td>选手转会数据</td>
+                            <td>
+                                <span class="status-badge status-success">成功</span>
+                            </td>
+                            <td>45</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-icon" title="查看详情">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon" title="下载">
+                                        <i class="fa fa-download"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2023-05-25 10:20:33</td>
+                            <td>赞助商数据_2025夏季赛.csv</td>
+                            <td>赞助商数据</td>
+                            <td>
+                                <span class="status-badge status-danger">失败</span>
+                            </td>
+                            <td>0/18</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-icon" title="查看详情">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon" title="重试">
+                                        <i class="fa fa-refresh"></i>
+                                    </button>
+                                    <button class="btn-icon" title="下载">
+                                        <i class="fa fa-download"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 分页 -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+            <div style="color: var(--light-100); font-size: 14px;">
+                显示 1-6 条，共 24 条记录
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary" disabled>
+                    <i class="fa fa-chevron-left"></i>
+                    上一页
+                </button>
+                <button class="btn btn-secondary">
+                    1
+                </button>
+                <button class="btn btn-primary">
+                    2
+                </button>
+                <button class="btn btn-secondary">
+                    3
+                </button>
+                <button class="btn btn-secondary">
+                    下一页
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/common.js"></script>
+    <script>
+        // 页面特定功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 表格行点击效果
+            const tableRows = document.querySelectorAll('.table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function(e) {
+                    if (!e.target.closest('button')) {
+                        // 移除其他行的选中状态
+                        tableRows.forEach(r => r.classList.remove('selected'));
+                        // 添加当前行的选中状态
+                        this.classList.add('selected');
+                    }
+                });
+            });
+
+            // 操作按钮事件
+            document.addEventListener('click', function(e) {
+                const button = e.target.closest('.btn-icon');
+                if (button) {
+                    const icon = button.querySelector('i');
+                    const row = button.closest('tr');
+                    const fileName = row.cells[1].textContent;
+                    
+                    if (icon.classList.contains('fa-eye')) {
+                        alert(`查看详情: ${fileName}`);
+                    } else if (icon.classList.contains('fa-download')) {
+                        alert(`下载文件: ${fileName}`);
+                    } else if (icon.classList.contains('fa-refresh')) {
+                        alert(`重试导入: ${fileName}`);
+                    }
+                }
+            });
+
+            // 筛选功能
+            const filterSelect = document.querySelector('.toolbar-right .select');
+            if (filterSelect) {
+                filterSelect.addEventListener('change', function() {
+                    const selectedStatus = this.value;
+                    console.log('筛选状态:', selectedStatus);
+                    // 这里可以添加实际的筛选逻辑
+                });
+            }
+
+            // 新建导入按钮
+            const newImportBtn = document.querySelector('.btn-primary');
+            if (newImportBtn && newImportBtn.textContent.includes('新建导入')) {
+                newImportBtn.addEventListener('click', function() {
+                    window.location.href = 'data-import.html';
+                });
+            }
+        });
+    </script>
+<script src="js/common.js"></script>
+</body>
+</html>
+

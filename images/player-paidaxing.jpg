@@ -1,0 +1,10 @@
+<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="paidaxingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9B59B6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8E44AD;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="30" cy="30" r="30" fill="url(#paidaxingGradient)"/>
+  <text x="30" y="28" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">派大星</text>
+</svg>

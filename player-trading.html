@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选手交易 - PEL联盟生态数据大屏</title>
+    
+    <!-- 外部资源 -->
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+    <script src="js/echarts.min.js"></script>
+    
+    <!-- 本地样式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        /* 页面容器样式 - 使用标准的page-container */
+        .page-container {
+            padding: 32px;
+            max-width: 1650px; /* 调整最大宽度为1650px */
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0 0 8px 0;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #8b8d97;
+            margin: 0;
+        }
+
+        /* 选手转会看板样式 - 统一section样式 */
+        .transfer-dashboard {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0 0 24px 0;
+        }
+
+        /* 看板头部样式 */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-header .section-title {
+            margin: 0;
+        }
+
+        /* 筛选下拉框样式 */
+        .period-filter {
+            display: flex;
+            align-items: center;
+        }
+
+        .period-select {
+            background: #1E2329;
+            border: 1px solid #4E5969;
+            border-radius: 8px;
+            padding: 8px 16px;
+            color: #C9CDD4;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+
+        .period-select:hover {
+            border-color: #4A90E2;
+        }
+
+        .period-select:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+
+        .period-select option {
+            background: #1E2329;
+            color: #C9CDD4;
+            padding: 8px;
+        }
+
+        /* 年份标签页样式 */
+        .year-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .year-tab {
+            background: #1E2329;
+            border: 1px solid #4E5969;
+            border-radius: 8px;
+            padding: 12px 24px;
+            color: #C9CDD4;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .year-tab.active {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            border-color: #4A90E2;
+            color: #FFFFFF;
+        }
+
+        .year-tab:hover:not(.active) {
+            background: #4E5969;
+            color: #FFFFFF;
+        }
+
+        /* 转会卡片容器 */
+        .transfer-cards-container {
+            position: relative;
+        }
+
+        .transfer-cards {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr); /* 调整为5列布局 */
+            gap: 20px; /* 增加间距 */
+        }
+
+        .transfer-cards.active {
+            display: grid;
+        }
+
+        .transfer-card {
+            background: #1E2329;
+            border-radius: 8px;
+            padding: 24px; /* 增加内边距 */
+            border: 1px solid #4E5969;
+            min-height: 280px; /* 设置最小高度保持一致 */
+        }
+
+        .transfer-card:nth-child(1) .year-tab-indicator {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+        }
+
+        .transfer-card:nth-child(2) .year-tab-indicator {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+        }
+
+        .transfer-card:nth-child(3) .year-tab-indicator {
+            background: linear-gradient(135deg, #00D4AA, #00B894);
+        }
+
+        .transfer-card:nth-child(4) .year-tab-indicator {
+            background: linear-gradient(135deg, #FF9500, #FF6B35);
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px; /* 增加底部间距 */
+        }
+
+        .card-stats:last-of-type {
+            margin-bottom: 24px; /* 增加最后一个的底部间距 */
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            padding: 0 8px; /* 添加左右内边距 */
+        }
+
+        .stat-label {
+            font-size: 13px; /* 稍微增大字体 */
+            color: #C9CDD4;
+            margin-bottom: 6px; /* 增加底部间距 */
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .stat-value {
+            font-size: 18px; /* 增大数值字体 */
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        .price-ranges {
+            background: #0F1419;
+            border-radius: 6px;
+            padding: 16px; /* 增加内边距 */
+        }
+
+        .price-range {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px; /* 增加间距 */
+        }
+
+        .price-range:last-child {
+            margin-bottom: 0;
+        }
+
+        .range-label {
+            font-size: 13px; /* 稍微增大字体 */
+            color: #C9CDD4;
+        }
+
+        .range-value {
+            font-size: 15px; /* 稍微增大字体 */
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        /* 查看全部按钮 */
+        .view-all-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        .view-all-btn {
+            background: transparent;
+            border: 1px solid #4E5969;
+            border-radius: 4px;
+            padding: 6px 20px;
+            color: #C9CDD4;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            background: #4E5969;
+            color: #FFFFFF;
+        }
+
+        /* 选手筛选模块样式 */
+        .player-filter-section {
+            margin-top: 40px;
+            padding: 0 20px;
+        }
+
+        .filter-container {
+            max-width: 1590px;
+            margin: 0 auto;
+        }
+
+        .filter-form-card {
+            background: rgba(46, 51, 59, 1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 分类标签样式 */
+        .filter-categories {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            background: rgba(255, 255, 255, 0.1);
+            color: #A0AEC0;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .category-tab.active,
+        .category-tab:hover {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: white;
+        }
+
+        .filter-info {
+            color: #A0AEC0;
+            font-size: 14px;
+        }
+
+        .filter-count {
+            color: #E2E8F0;
+        }
+
+        /* 分页控制样式 */
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #A0AEC0;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .pagination-btn.active {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: white;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 筛选表单样式 */
+        .filter-form {
+            margin-top: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            color: #E2E8F0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .form-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4A90E2;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: #A0AEC0;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #357ABD 0%, #2E6BA8 100%);
+        }
+
+        .select-group {
+            position: relative;
+        }
+
+        .form-select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 10px 32px 10px 12px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #4A90E2;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-select option {
+            background: #2D3748;
+            color: white;
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #A0AEC0;
+            pointer-events: none;
+            font-size: 12px;
+        }
+
+        /* 选手表格样式 */
+        .player-table-card {
+            background: rgba(46, 51, 59,1 );
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .player-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+        }
+
+        .player-table th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: #E2E8F0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+
+        .player-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .player-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .player-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .player-name {
+            font-weight: 500;
+            color: #E2E8F0;
+        }
+
+        .club-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .club-tag {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .club-4am {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%);
+        }
+
+        .club-nv {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+        }
+
+        .club-ag {
+            background: linear-gradient(135deg, #FFB347 0%, #FF8C42 100%);
+        }
+
+        .club-tc {
+            background: linear-gradient(135deg, #98D8C8 0%, #6FCF97 100%);
+        }
+
+        .club-rsg {
+            background: linear-gradient(135deg, #A8A8A8 0%, #8E8E8E 100%);
+        }
+
+        .rating-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .rating-circle {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .rating-circle.red {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%);
+        }
+
+        .rating-circle.blue {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        }
+
+        .contract-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-bar {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .status-bar.active {
+            background: linear-gradient(135deg, #6FCF97 0%, #66BB6A 100%);
+        }
+
+        .status-bar.warning {
+            background: linear-gradient(135deg, #FFB347 0%, #FF8C42 100%);
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: #A0AEC0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .filter-categories {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                align-self: flex-start;
+            }
+
+            .player-table-card {
+                padding: 16px;
+            }
+
+            .table-container {
+                margin: -16px;
+                padding: 16px;
+            }
+        }
+
+        /* 青训情况数据样式 - 统一section样式 */
+        .youth-training-section {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .youth-data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px; /* 增加间距与转会卡片保持协调 */
+        }
+
+        .youth-data-card {
+            background: #1E2329;
+            border-radius: 8px;
+            padding: 28px; /* 增加内边距 */
+            border: 1px solid #4E5969;
+            min-height: 200px; /* 设置最小高度 */
+        }
+
+        .card-title {
+            font-size: 18px; /* 增大标题字体 */
+            font-weight: 600;
+            color: #FFFFFF;
+            margin: 0 0 24px 0; /* 增加底部间距 */
+        }
+
+        .data-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* 增加间距 */
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .data-label {
+            font-size: 15px; /* 稍微增大字体 */
+            color: #C9CDD4;
+        }
+
+        .data-value {
+            font-size: 18px; /* 增大数值字体 */
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        .data-value.green {
+            color: #00D4AA;
+        }
+
+        .data-value.blue {
+            color: #4A90E2;
+        }
+
+        .data-value.orange {
+            color: #FF9500;
+        }
+
+        .data-value.red {
+            color: #FF6B6B;
+        }
+        
+        .filter-section {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #FFFFFF;
+        }
+        
+        .filter-input {
+            background: #1E2329;
+            border: 1px solid #4E5969;
+            border-radius: 4px;
+            padding: 10px 12px;
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+        
+        .filter-input::placeholder {
+            color: #C9CDD4;
+        }
+        
+        .filter-input:focus {
+            outline: none;
+            border-color: #FF6B35;
+        }
+        
+        .filter-select {
+            background: #1E2329;
+            border: 1px solid #4E5969;
+            border-radius: 4px;
+            padding: 10px 12px;
+            color: #FFFFFF;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .filter-select option {
+            background: #1E2329;
+            color: #FFFFFF;
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, #FF6B35, #FF9500);
+            border: none;
+            border-radius: 6px;
+            padding: 10px 24px;
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .category-tab {
+            background: #1E2329;
+            border: 1px solid #4E5969;
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: #C9CDD4;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-tab.active {
+            background: linear-gradient(135deg, #FF6B35, #FF9500);
+            border-color: #FF6B35;
+            color: #FFFFFF;
+        }
+        
+        .players-table-container {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+        
+        .table-info {
+            font-size: 14px;
+            color: #C9CDD4;
+        }
+        
+        .players-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .players-table th {
+            background: #1E2329;
+            color: #FFFFFF;
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #4E5969;
+        }
+        
+        .players-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #4E5969;
+            color: #FFFFFF;
+        }
+        
+        .players-table tr:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #FF6B35, #FF9500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .player-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .player-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+        
+        .player-id {
+            font-size: 12px;
+            color: #C9CDD4;
+        }
+        
+        .team-badge {
+            background: #4E5969;
+            color: #FFFFFF;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .value-badge {
+            background: linear-gradient(135deg, #00D4AA, #00B894);
+            color: #FFFFFF;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .rating-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .rating-s {
+            background: #00D4AA;
+            color: #FFFFFF;
+        }
+        
+        .rating-a {
+            background: #FFD60A;
+            color: #1E2329;
+        }
+        
+        .rating-b {
+            background: #74B9FF;
+            color: #FFFFFF;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background: #00D4AA;
+            color: #FFFFFF;
+        }
+        
+        .status-contract {
+            background: #FFD60A;
+            color: #1E2329;
+        }
+        
+        .status-unavailable {
+            background: #FF6B6B;
+            color: #FFFFFF;
+        }
+        
+        .action-btn {
+            background: #FF6B35;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            color: #FFFFFF;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: #FF9500;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-btn {
+            background: #1E2329;
+            border: 1px solid #4E5969;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #C9CDD4;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-btn:hover {
+            background: #4E5969;
+            color: #FFFFFF;
+        }
+        
+        .pagination-btn.active {
+            background: linear-gradient(135deg, #FF6B35, #FF9500);
+            border-color: #FF6B35;
+            color: #FFFFFF;
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .players-table {
+                font-size: 12px;
+            }
+            
+            .players-table th,
+            .players-table td {
+                padding: 8px;
+            }
+        }
+
+        /* 选手筛选模块样式 */
+        .player-filter-module {
+            background: #2a2d3a;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #3a3d4a;
+        }
+
+        .filter-categories {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #3a3d4a;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .category-tab {
+            background: transparent;
+            border: 1px solid #4a4d5a;
+            color: #8b8d97;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .category-tab:hover {
+            border-color: #5a9fd4;
+            color: #5a9fd4;
+        }
+
+        .category-tab.active {
+            background: #5a9fd4;
+            border-color: #5a9fd4;
+            color: white;
+        }
+
+        .filter-info {
+            color: #8b8d97;
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .pagination-btn {
+            background: transparent;
+            border: 1px solid #4a4d5a;
+            color: #8b8d97;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #5a9fd4;
+            color: #5a9fd4;
+        }
+
+        .pagination-btn.active {
+            background: #5a9fd4;
+            border-color: #5a9fd4;
+            color: white;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 选手标签区域样式 */
+        .player-tags-section {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #3a3d4a;
+        }
+
+        .tags-label {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .player-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .player-tag {
+            background: transparent;
+            border: 1px solid #4a4d5a;
+            color: #8b8d97;
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .player-tag:hover {
+            border-color: #5a9fd4;
+            color: #5a9fd4;
+            background: rgba(90, 159, 212, 0.1);
+        }
+
+        .player-tag.active {
+            background: #5a9fd4;
+            border-color: #5a9fd4;
+            color: white;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .filter-btn {
+            background: #5a9fd4;
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: #4a8bc2;
+            transform: translateY(-1px);
+        }
+
+        .filter-btn.primary {
+            background: #5a9fd4;
+        }
+
+        /* 筛选表单样式 */
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            background: #1e2029;
+            border: 1px solid #4a4d5a;
+            color: #ffffff;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #5a9fd4;
+            box-shadow: 0 0 0 2px rgba(90, 159, 212, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #6b6d77;
+        }
+
+        .form-group select option {
+            background: #1e2029;
+            color: #ffffff;
+        }
+
+        .search-btn {
+            background: #5a9fd4;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            align-self: flex-end;
+            height: fit-content;
+        }
+
+        .search-btn:hover {
+            background: #4a8bc2;
+            transform: translateY(-1px);
+        }
+
+        /* 选手列表表格样式 */
+        .player-list-table {
+            background: #2a2d3a;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #3a3d4a;
+        }
+
+        .player-list-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .player-list-table th {
+            background: #1e2029;
+            color: #ffffff;
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 1px solid #3a3d4a;
+        }
+
+        .player-list-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #3a3d4a;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .player-list-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .player-list-table tr:hover {
+            background: rgba(90, 159, 212, 0.05);
+        }
+
+        .player-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #4a4d5a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .club-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .club-logo {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+        }
+
+        .rating-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .rating-s {
+            background: rgba(255, 87, 87, 0.2);
+            color: #ff5757;
+        }
+
+        .rating-a {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+        }
+
+        .rating-b {
+            background: rgba(90, 159, 212, 0.2);
+            color: #5a9fd4;
+        }
+
+        .value-amount {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .contract-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .contract-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .contract-expiring {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .transfer-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .status-negotiating {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid #5a9fd4;
+            color: #5a9fd4;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #5a9fd4;
+            color: white;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .filter-categories {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .category-tabs {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .player-tags {
+                justify-content: center;
+            }
+
+            .player-list-table {
+                overflow-x: auto;
+            }
+
+            .player-list-table table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航：由 common.js 动态生成 -->
+    <header class="top-nav"></header>
+
+    <!-- 侧边栏导航 -->
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">主菜单</div>
+                <div class="sidebar-menu">
+                    <!-- 联盟生态下拉菜单 -->
+                    <div class="sidebar-dropdown">
+                        <div class="sidebar-item sidebar-dropdown-toggle">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fa fa-globe"></i>
+                                <span>联盟生态</span>
+                            </div>
+                        </div>
+                        <div class="sidebar-submenu">
+                            <a href="alliance-overview.html" class="sidebar-submenu-item">
+                                <i class="fa fa-dashboard"></i>
+                                <span>联盟生态大盘</span>
+                            </a>
+                            <div class="sidebar-dropdown">
+                                <div class="sidebar-submenu-item sidebar-dropdown-toggle">
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="fa fa-bar-chart"></i>
+                                        <span>联盟生态深度分析</span>
+                                    </div>
+                                </div>
+                                <div class="sidebar-submenu" style="margin-left: 16px;">
+                                    <a href="alliance-dimension.html" class="sidebar-submenu-item">
+                                        <i class="fa fa-file-text-o"></i>
+                                        <span>分析报告</span>
+                                    </a>
+                                    <a href="alliance-indicators.html" class="sidebar-submenu-item">
+                                        <i class="fa fa-line-chart"></i>
+                                        <span>细分指标</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="club-overview.html" class="sidebar-item" data-page="club-overview">
+                        <i class="fa fa-building"></i>
+                        <span>俱乐部生态</span>
+                    </a>
+                    <a href="player-overview.html" class="sidebar-item active" data-page="player-overview">
+                        <i class="fa fa-user-circle-o"></i>
+                        <span>选手生态</span>
+                    </a>
+                    <a href="match-data.html" class="sidebar-item" data-page="match-data">
+                        <i class="fa fa-trophy"></i>
+                        <span>赛事数据</span>
+                    </a>
+                    <a href="system-settings.html" class="sidebar-item" data-page="system-settings">
+                        <i class="fa fa-cog"></i>
+                        <span>系统设置</span>
+                    </a>
+                    <a href="data-import.html" class="sidebar-item" data-page="data-import">
+                        <i class="fa fa-upload"></i>
+                        <span>数据导入</span>
+                    </a>
+                    <a href="import-log.html" class="sidebar-item" data-page="import-log">
+                        <i class="fa fa-list-alt"></i>
+                        <span>导入日志</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="page-container">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">选手管理————选手数据</h1>
+                <p class="page-subtitle">全面管理联盟选手数据，包括选手、俱乐部、培养和转会信息</p>
+            </div>
+
+            <!-- 选手转会看板 -->
+            <div class="transfer-dashboard">
+                <div class="dashboard-header">
+                    <h2 class="section-title">选手转会看板</h2>
+                    <div class="period-filter">
+                        <select class="period-select" id="periodSelect">
+                            <option value="recent-4">所有转会期</option>
+                            <option value="recent-8">最近八个转会期</option>
+                            <option value="all" selected>最近四个转会期</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- 年份标签页 -->
+                <div class="year-tabs">
+                    <button class="year-tab active" data-year="2023-spring">2023年春季转会期</button>
+                    <button class="year-tab" data-year="2023-summer">2023年夏季转会期</button>
+                    <button class="year-tab" data-year="2024-spring">2024年春季转会期</button>
+                    <button class="year-tab" data-year="2024-summer">2024年夏季转会期</button>
+                </div>
+
+                <!-- 数据卡片容器 -->
+                <div class="transfer-cards-container">
+                    <!-- 2023年春季合同数据 -->
+                    <div class="transfer-cards active" data-content="2023-spring">
+                        <div class="transfer-card">
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">PEL转播人数</span>
+                                    <span class="stat-value">57名</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">PEL转播人数</span>
+                                    <span class="stat-value">1</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">成功转会人数</span>
+                                    <span class="stat-value">14名</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">挂牌中位数</span>
+                                    <span class="stat-value">20W</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">成交中位数</span>
+                                    <span class="stat-value">78W</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">平均挂牌价</span>
+                                    <span class="stat-value">52.9W</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">平均成交价</span>
+                                    <span class="stat-value">153.43W</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">TEC-Suk [450W]</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">TEC-Suk [546W]</span>
+                                </div>
+                            </div>
+                            <div class="price-ranges">
+                                <div class="price-range">
+                                    <span class="range-label">成交价1000W以上选手</span>
+                                    <span class="range-value">1</span>
+                                </div>
+                                <div class="price-range">
+                                    <span class="range-label">成交价500W以上选手</span>
+                                    <span class="range-value">1</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                </div>
+
+                    <!-- 2023年夏季合同数据 -->
+                    <div class="transfer-cards" data-content="2023-summer">
+                        <div class="transfer-card">
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">PEL转播人数</span>
+                                    <span class="stat-value">62名</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">PEL转播人数</span>
+                                    <span class="stat-value">2</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">成功转会人数</span>
+                                    <span class="stat-value">18名</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">挂牌中位数</span>
+                                    <span class="stat-value">25W</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">成交中位数</span>
+                                    <span class="stat-value">85W</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">平均挂牌价</span>
+                                    <span class="stat-value">58.7W</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">平均成交价</span>
+                                    <span class="stat-value">168.92W</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">4AM-Forever [520W]</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">NV-Paraboy [680W]</span>
+                                </div>
+                            </div>
+                            <div class="price-ranges">
+                                <div class="price-range">
+                                    <span class="range-label">成交价1000W以上选手</span>
+                                    <span class="range-value">0</span>
+                                </div>
+                                <div class="price-range">
+                                    <span class="range-label">成交价500W以上选手</span>
+                                    <span class="range-value">2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2024年春季合同数据 -->
+                    <div class="transfer-cards" data-content="2024-spring">
+                        <div class="transfer-card">
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">PEL转播人数</span>
+                                    <span class="stat-value">71名</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">PEL转播人数</span>
+                                    <span class="stat-value">3</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">成功转会人数</span>
+                                    <span class="stat-value">22名</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">挂牌中位数</span>
+                                    <span class="stat-value">32W</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">成交中位数</span>
+                                    <span class="stat-value">95W</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">平均挂牌价</span>
+                                    <span class="stat-value">67.3W</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">平均成交价</span>
+                                    <span class="stat-value">189.76W</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">AG-Fly [750W]</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">RSG-Godv [890W]</span>
+                                </div>
+                            </div>
+                            <div class="price-ranges">
+                                <div class="price-range">
+                                    <span class="range-label">成交价1000W以上选手</span>
+                                    <span class="range-value">0</span>
+                                </div>
+                                <div class="price-range">
+                                    <span class="range-label">成交价500W以上选手</span>
+                                    <span class="range-value">3</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2024年夏季合同数据 -->
+                    <div class="transfer-cards" data-content="2024-summer">
+                        <div class="transfer-card">
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">PEL转播人数</span>
+                                    <span class="stat-value">84名</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">PEL转播人数</span>
+                                    <span class="stat-value">4</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">成功转会人数</span>
+                                    <span class="stat-value">28名</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">挂牌中位数</span>
+                                    <span class="stat-value">38W</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">成交中位数</span>
+                                    <span class="stat-value">112W</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">平均挂牌价</span>
+                                    <span class="stat-value">75.8W</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">平均成交价</span>
+                                    <span class="stat-value">215.34W</span>
+                                </div>
+                            </div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">TC-Xiaoxin [1200W]</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">4AM-Wei [950W]</span>
+                                </div>
+                            </div>
+                            <div class="price-ranges">
+                                <div class="price-range">
+                                    <span class="range-label">成交价1000W以上选手</span>
+                                    <span class="range-value">1</span>
+                                </div>
+                                <div class="price-range">
+                                    <span class="range-label">成交价500W以上选手</span>
+                                    <span class="range-value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <!-- 青训情况数据 -->
+            <div class="youth-training-section">
+                <h2 class="section-title">青训情况数据</h2>
+                
+                <div class="youth-data-grid">
+                    <!-- 青训数据统计 -->
+                    <div class="youth-data-card">
+                        <h3 class="card-title">青训数据统计</h3>
+                        <div class="data-items">
+                            <div class="data-item">
+                                <span class="data-label">当前青训选手总数</span>
+                                <span class="data-value">142</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">本赛季新增青训</span>
+                                <span class="data-value green">28</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">青训转正率</span>
+                                <span class="data-value blue">64.5%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 选手大会成交数据 -->
+                    <div class="youth-data-card">
+                        <h3 class="card-title">选手大会成交数据</h3>
+                        <div class="data-items">
+                            <div class="data-item">
+                                <span class="data-label">本赛季参与成交人数</span>
+                                <span class="data-value">36</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">平均选手成交金额</span>
+                                <span class="data-value orange">¥156万</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">最高选手金额</span>
+                                <span class="data-value red">¥580万</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 青训数据统计 -->
+                    <div class="youth-data-card">
+                        <h3 class="card-title">青训数据统计</h3>
+                        <div class="data-items">
+                            <div class="data-item">
+                                <span class="data-label">当前青训选手数量</span>
+                                <span class="data-value">12</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">青训营在训人数</span>
+                                <span class="data-value blue">253</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">青训选手正率</span>
+                                <span class="data-value green">42.8%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 选手筛选模块 -->
+        <section class="player-filter-section">
+            <div class="filter-container">
+                <!-- 筛选表单 -->
+                <div class="filter-form-card">
+                    <!-- 筛选表单 -->
+                    <div class="filter-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">选手姓名</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-input" id="playerNameInput" placeholder="请输入选手姓名">
+                                    <button class="search-btn" onclick="searchPlayers()">
+                                        搜索
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">俱乐部</label>
+                                <div class="select-group">
+                                    <select class="form-select" id="clubSelect">
+                                        <option value="">全部俱乐部</option>
+                                        <option value="AG">AG</option>
+                                        <option value="Tianba">Tianba</option>
+                                        <option value="WBG">WBG</option>
+                                        <option value="JDG">JDG</option>
+                                        <option value="TC">TC</option>
+                                        <option value="STE">STE</option>
+                                        <option value="LGD">LGD</option>
+                                        <option value="RW">RW</option>
+                                        <option value="TT">TT</option>
+                                        <option value="VS">VS</option>
+                                        <option value="TJB">TJB</option>
+                                        <option value="NV">NV</option>
+                                        <option value="4AM">4AM</option>
+                                        <option value="KSG">KSG</option>
+                                        <option value="ACT">ACT</option>
+                                        <option value="KBG">KBG</option>
+                                        <option value="RSG">RSG</option>
+                                        <option value="ST">ST</option>
+                                        <option value="TEC">TEC</option>
+                                        <option value="KONE">KONE</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">商业价值划分</label>
+                                <div class="select-group">
+                                    <select class="form-select" id="valueSelect">
+                                        <option value="">不限</option>
+                                                                                <option value="high">小于100W</option>
+                                        <option value="high">大于100W</option>
+                                        <option value="medium">大于300W</option>
+                                        <option value="low">大于500W</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">省份</label>
+                                <div class="select-group">
+                                    <select class="form-select" id="regionSelect">
+                                        <option value="">全部省份</option>
+                                        <option value="beijing">北京市</option>
+                                        <option value="tianjin">天津市</option>
+                                        <option value="hebei">河北省</option>
+                                        <option value="shanxi">山西省</option>
+                                        <option value="neimenggu">内蒙古自治区</option>
+                                        <option value="liaoning">辽宁省</option>
+                                        <option value="jilin">吉林省</option>
+                                        <option value="heilongjiang">黑龙江省</option>
+                                        <option value="shanghai">上海市</option>
+                                        <option value="jiangsu">江苏省</option>
+                                        <option value="zhejiang">浙江省</option>
+                                        <option value="anhui">安徽省</option>
+                                        <option value="fujian">福建省</option>
+                                        <option value="jiangxi">江西省</option>
+                                        <option value="shandong">山东省</option>
+                                        <option value="henan">河南省</option>
+                                        <option value="hubei">湖北省</option>
+                                        <option value="hunan">湖南省</option>
+                                        <option value="guangdong">广东省</option>
+                                        <option value="guangxi">广西壮族自治区</option>
+                                        <option value="hainan">海南省</option>
+                                        <option value="chongqing">重庆市</option>
+                                        <option value="sichuan">四川省</option>
+                                        <option value="guizhou">贵州省</option>
+                                        <option value="yunnan">云南省</option>
+                                        <option value="xizang">西藏自治区</option>
+                                        <option value="shaanxi">陕西省</option>
+                                        <option value="gansu">甘肃省</option>
+                                        <option value="qinghai">青海省</option>
+                                        <option value="ningxia">宁夏回族自治区</option>
+                                        <option value="xinjiang">新疆维吾尔自治区</option>
+                                        <option value="hongkong">香港特别行政区</option>
+                                        <option value="macau">澳门特别行政区</option>
+                                        <option value="taiwan">台湾省</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">合同状态</label>
+                                <div class="select-group">
+                                    <select class="form-select" id="contractSelect">
+                                        <option value="">全部状态</option>
+                                        <option value="active">合约中</option>
+                                        <option value="expired">合约到期</option>
+                                        <option value="negotiating">续约谈判中</option>
+                                        <option value="transfer">转会中</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">在役状态</label>
+                                <div class="select-group">
+                                    <select class="form-select" id="statusSelect">
+                                        <option value="">全部状态</option>
+                                        <option value="active">现役</option>
+                                        <option value="substitute">替补</option>
+                                        <option value="youth">青训</option>
+                                        <option value="retired">退役</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 选手标签 -->
+                    <div class="player-tags-section">
+                        <div class="tags-label">选手标签</div>
+                        <div class="player-tags">
+                            <button class="player-tag" data-tag="champion">冠军选手</button>
+                            <button class="player-tag" data-tag="fmvp">FMVP选手</button>
+                            <button class="player-tag" data-tag="rookie">最佳新秀</button>
+                            <button class="player-tag" data-tag="commander">最佳指挥</button>
+                            <button class="player-tag" data-tag="assault">最佳突击手</button>
+                            <button class="player-tag" data-tag="sniper">最佳狙击手</button>
+                            <button class="player-tag" data-tag="popular">人气选手</button>
+                            <button class="player-tag" data-tag="high-value">商业价值高</button>
+                            <button class="player-tag" data-tag="international">国际赛事经验</button>
+                        
+                            <button class="player-tag" data-tag="youth-trained">青训出身</button>
+                      <div class="filter-actions">
+                            <button class="filter-btn primary">筛选</button>
+                        </div>
+                        </div>
+                        
+                    </div>
+
+                    <!-- 分类标签和分页控件 -->
+                    <div class="filter-categories">
+
+                        <div class="filter-info">
+                            <span class="filter-count">显示 1-7 条，共 22 条</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn prev-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="pagination-btn page-btn active">1</button>
+                            <button class="pagination-btn page-btn">2</button>
+                            <button class="pagination-btn page-btn">3</button>
+                            <button class="pagination-btn next-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                     <div class="table-container">
+                        <table class="player-table">
+                            <thead>
+                                <tr>
+                                    <th>选手</th>
+                                    <th>俱乐部</th>
+                                    <th>年龄</th>
+                                    <th>位置</th>
+                                    <th>综合评分</th>
+                                    <th>选手价值</th>
+                                    <th>合同状态</th>
+                                    <th>相关合同信息</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <img src="images/player-ajie-new.svg" alt="选手头像" class="player-avatar">
+                                            <span class="player-name">XX</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="club-info">
+                                            <span class="club-tag club-4am">4AM</span>
+                                        </div>
+                                    </td>
+                                    <td>21</td>
+                                    <td>突击手</td>
+                                    <td>
+                                        <div class="rating-info">
+                                            <span class="rating-circle red">96.8</span>
+                                        </div>
+                                    </td>
+                                    <td>¥1,200万</td>
+                                    <td>合约中 (1.5年)</td>
+                                    <td>
+                                        <div class="contract-status">
+                                            <span class="status-bar active"></span>
+                                            <span class="status-text">合理</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <img src="images/player-king-new.svg" alt="选手头像" class="player-avatar">
+                                            <span class="player-name">XX</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="club-info">
+                                            <span class="club-tag club-nv">NV</span>
+                                        </div>
+                                    </td>
+                                    <td>22</td>
+                                    <td>指挥</td>
+                                    <td>
+                                        <div class="rating-info">
+                                            <span class="rating-circle red">95.2</span>
+                                        </div>
+                                    </td>
+                                    <td>¥1,100万</td>
+                                    <td>合约中 (2年)</td>
+                                    <td>
+                                        <div class="contract-status">
+                                            <span class="status-bar active"></span>
+                                            <span class="status-text">合理</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <img src="images/player-paidaxing-new.svg" alt="选手头像" class="player-avatar">
+                                            <span class="player-name">XX</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="club-info">
+                                            <span class="club-tag club-ag">AG</span>
+                                        </div>
+                                    </td>
+                                    <td>20</td>
+                                    <td>自由人</td>
+                                    <td>
+                                        <div class="rating-info">
+                                            <span class="rating-circle blue">92.6</span>
+                                        </div>
+                                    </td>
+                                    <td>¥950万</td>
+                                    <td>合约中 (1年)</td>
+                                    <td>
+                                        <div class="contract-status">
+                                            <span class="status-bar warning"></span>
+                                            <span class="status-text">偏高</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <img src="images/player-silu-new.svg" alt="选手头像" class="player-avatar">
+                                            <span class="player-name">XX</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="club-info">
+                                            <span class="club-tag club-tc">TC战队</span>
+                                        </div>
+                                    </td>
+                                    <td>19</td>
+                                    <td>狙击手</td>
+                                    <td>
+                                        <div class="rating-info">
+                                            <span class="rating-circle blue">91.3</span>
+                                        </div>
+                                    </td>
+                                    <td>¥880万</td>
+                                    <td>合约中 (2.5年)</td>
+                                    <td>
+                                        <div class="contract-status">
+                                            <span class="status-bar active"></span>
+                                            <span class="status-text">合理</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <img src="images/player-tianyu-new.svg" alt="选手头像" class="player-avatar">
+                                            <span class="player-name">XX</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="club-info">
+                                            <span class="club-tag club-rsg">RSG战队</span>
+                                        </div>
+                                    </td>
+                                    <td>21</td>
+                                    <td>突击手</td>
+                                    <td>
+                                        <div class="rating-info">
+                                            <span class="rating-circle blue">90.8</span>
+                                        </div>
+                                    </td>
+                                    <td>¥820万</td>
+                                    <td>合约中 (0.5年)</td>
+                                    <td>
+                                        <div class="contract-status">
+                                            <span class="status-bar active"></span>
+                                            <span class="status-text">合理</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
+
+                <!-- 选手列表表格 -->
+        
+                   
+               
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 年份标签页切换功能
+        document.querySelectorAll('.year-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有活跃状态
+                document.querySelectorAll('.year-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.transfer-cards').forEach(c => {
+                    c.classList.remove('active');
+                    c.style.display = 'none';
+                });
+                
+                // 添加当前活跃状态
+                this.classList.add('active');
+                const targetYear = this.dataset.year;
+                const targetContent = document.querySelector(`[data-content="${targetYear}"]`);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    targetContent.style.display = 'block';
+                }
+            });
+        });
+
+        // 转会期筛选功能
+        document.getElementById('periodSelect').addEventListener('change', function() {
+            const selectedPeriod = this.value;
+            const allTabs = document.querySelectorAll('.year-tab');
+            
+            // 根据选择的转会期范围显示/隐藏年份标签页
+            allTabs.forEach(tab => {
+                const year = tab.dataset.year;
+                let shouldShow = true;
+                
+                if (selectedPeriod === 'recent-4') {
+                    // 最近四个转会期：2023春季、2023夏季、2024春季、2024夏季
+                    shouldShow = true;
+                } else if (selectedPeriod === 'recent-8') {
+                    // 最近八个转会期：显示所有（假设只有4个转会期）
+                    shouldShow = true;
+                } else if (selectedPeriod === 'all') {
+                    // 所有转会期
+                    shouldShow = true;
+                }
+                
+                tab.style.display = shouldShow ? 'block' : 'none';
+            });
+            
+            // 如果当前活跃的标签页被隐藏，则激活第一个可见的标签页
+            const activeTab = document.querySelector('.year-tab.active');
+            if (activeTab && activeTab.style.display === 'none') {
+                const firstVisibleTab = document.querySelector('.year-tab[style*="block"], .year-tab:not([style*="none"])');
+                if (firstVisibleTab) {
+                    activeTab.classList.remove('active');
+                    firstVisibleTab.click();
+                }
+            }
+            
+            console.log('筛选转会期:', selectedPeriod);
+        });
+
+        // 初始化显示第一个标签页内容
+        document.addEventListener('DOMContentLoaded', function() {
+            // 隐藏所有非活跃的标签页内容
+            document.querySelectorAll('.transfer-cards').forEach(c => {
+                if (!c.classList.contains('active')) {
+                    c.style.display = 'none';
+                }
+            });
+        });
+
+        // 分类标签切换
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const category = this.dataset.category;
+                filterPlayersByCategory(category);
+            });
+        });
+
+        // 搜索功能
+        function searchPlayers() {
+            const playerName = document.getElementById('playerNameInput').value;
+            const club = document.getElementById('clubSelect').value;
+            const value = document.getElementById('valueSelect').value;
+            const region = document.getElementById('regionSelect').value;
+            
+            console.log('搜索条件:', { playerName, club, value, region });
+            // 这里可以添加实际的搜索逻辑
+        }
+
+        // 按分类筛选选手
+        function filterPlayersByCategory(category) {
+            console.log('筛选分类:', category);
+            // 这里可以添加实际的筛选逻辑
+        }
+
+        // 选手筛选功能
+        function searchPlayers() {
+            const playerName = document.getElementById('playerNameInput').value;
+            const club = document.getElementById('clubSelect').value;
+            const value = document.getElementById('valueSelect').value;
+            const region = document.getElementById('regionSelect').value;
+            
+            console.log('搜索选手:', { playerName, club, value, region });
+            // 这里可以添加实际的搜索逻辑
+            
+            // 模拟搜索结果更新
+            updateFilterCount();
+        }
+
+        // 分类标签切换
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有活跃状态
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                // 添加当前活跃状态
+                this.classList.add('active');
+                
+                const category = this.dataset.category;
+                console.log('切换分类:', category);
+                
+                // 模拟筛选结果
+                updateFilterCount();
+            });
+        });
+
+        // 筛选条件变化监听
+        document.getElementById('clubSelect').addEventListener('change', function() {
+            updateFilterCount();
+        });
+
+        document.getElementById('valueSelect').addEventListener('change', function() {
+            updateFilterCount();
+        });
+
+        document.getElementById('regionSelect').addEventListener('change', function() {
+            updateFilterCount();
+        });
+
+        // 更新筛选结果计数
+        function updateFilterCount() {
+            const filterCount = document.querySelector('.filter-count');
+            // 模拟筛选结果数量
+            const totalCount = Math.floor(Math.random() * 50) + 10;
+            const displayCount = Math.min(7, totalCount);
+            filterCount.textContent = `显示 1-${displayCount} 条，共 ${totalCount} 条`;
+        }
+
+        // 分页功能增强
+        document.querySelectorAll('.pagination-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.disabled) return;
+                
+                const isPrevBtn = this.classList.contains('prev-btn');
+                const isNextBtn = this.classList.contains('next-btn');
+                const isPageBtn = this.classList.contains('page-btn');
+                
+                if (isPrevBtn) {
+                    // 上一页逻辑
+                    const currentActive = document.querySelector('.pagination-btn.active');
+                    const currentPage = parseInt(currentActive.textContent);
+                    if (currentPage > 1) {
+                        currentActive.classList.remove('active');
+                        const prevPage = document.querySelector(`[data-page="${currentPage - 1}"]`) || 
+                                        currentActive.previousElementSibling;
+                        if (prevPage && prevPage.classList.contains('page-btn')) {
+                            prevPage.classList.add('active');
+                        }
+                    }
+                } else if (isNextBtn) {
+                    // 下一页逻辑
+                    const currentActive = document.querySelector('.pagination-btn.active');
+                    const currentPage = parseInt(currentActive.textContent);
+                    const maxPage = 3; // 假设最大页数为3
+                    if (currentPage < maxPage) {
+                        currentActive.classList.remove('active');
+                        const nextPage = document.querySelector(`[data-page="${currentPage + 1}"]`) || 
+                                        currentActive.nextElementSibling;
+                        if (nextPage && nextPage.classList.contains('page-btn')) {
+                            nextPage.classList.add('active');
+                        }
+                    }
+                } else if (isPageBtn) {
+                    // 页码按钮逻辑
+                    document.querySelectorAll('.pagination-btn.page-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+                
+                // 更新上一页/下一页按钮状态
+                updatePaginationButtons();
+            });
+        });
+
+        // 更新分页按钮状态
+        function updatePaginationButtons() {
+            const currentActive = document.querySelector('.pagination-btn.active');
+            const currentPage = parseInt(currentActive.textContent);
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const maxPage = 3;
+            
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= maxPage;
+        }
+
+        // 分页功能
+        document.querySelectorAll('.pagination-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.disabled && !this.classList.contains('active')) {
+                    document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
+                    if (!this.querySelector('i')) {
+                        this.classList.add('active');
+                    }
+                }
+            });
+        });
+
+        // 选手标签点击事件
+        document.querySelectorAll('.player-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('active');
+                console.log('选择标签:', this.dataset.tag, this.classList.contains('active'));
+            });
+        });
+
+        // 筛选按钮点击事件
+        document.querySelector('.filter-btn').addEventListener('click', function() {
+            const selectedTags = Array.from(document.querySelectorAll('.player-tag.active'))
+                .map(tag => tag.dataset.tag);
+            console.log('筛选选手标签:', selectedTags);
+            // 这里可以添加实际的筛选逻辑
+            updateFilterCount();
+        });
+
+
+    </script>
+<script src="js/common.js"></script>
+</body>
+</html>
+

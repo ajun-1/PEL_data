@@ -1,0 +1,86 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d63031;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e17055;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="faceGradient6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffeaa7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fdcb6e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="dragonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fd79a8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e84393;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow6" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGradient6)" stroke="#fff" stroke-width="4" filter="url(#shadow6)"/>
+  
+  <!-- Dragon Silhouette Background -->
+  <g fill="url(#dragonGradient)" opacity="0.3">
+    <path d="M 20 40 Q 30 20 50 30 Q 70 15 90 35 Q 85 50 75 45 Q 60 55 45 50 Q 30 60 20 40"/>
+    <circle cx="85" cy="30" r="3"/>
+  </g>
+  
+  <!-- Face -->
+  <circle cx="60" cy="50" r="25" fill="url(#faceGradient6)"/>
+  
+  <!-- Eyes (Dragon-like) -->
+  <ellipse cx="53" cy="45" rx="4" ry="3" fill="#2d3436"/>
+  <ellipse cx="67" cy="45" rx="4" ry="3" fill="#2d3436"/>
+  <ellipse cx="54" cy="44" rx="1.5" ry="1" fill="#fff"/>
+  <ellipse cx="68" cy="44" rx="1.5" ry="1" fill="#fff"/>
+  
+  <!-- Nose -->
+  <ellipse cx="60" cy="52" rx="1.5" ry="2" fill="#e17055"/>
+  
+  <!-- Mouth (Confident) -->
+  <path d="M 54 58 Q 60 62 66 58" stroke="#2d3436" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Hair (Spiky) -->
+  <g fill="#2d3436">
+    <path d="M 35 45 Q 38 25 45 30 Q 50 20 55 28 Q 60 18 65 28 Q 70 20 75 30 Q 82 25 85 45 Q 80 30 75 32 Q 70 25 65 30 Q 60 22 55 30 Q 50 25 45 32 Q 40 30 35 45"/>
+    <!-- Spiky details -->
+    <polygon points="45,28 48,22 51,28"/>
+    <polygon points="55,25 58,18 61,25"/>
+    <polygon points="65,25 68,18 71,25"/>
+  </g>
+  
+  <!-- Body/Shirt -->
+  <ellipse cx="60" cy="85" rx="35" ry="25" fill="#d63031"/>
+  <rect x="25" y="75" width="70" height="30" fill="#d63031" rx="5"/>
+  
+  <!-- Dragon Scale Pattern on Shirt -->
+  <g fill="#fd79a8" opacity="0.4">
+    <ellipse cx="45" cy="82" rx="3" ry="2"/>
+    <ellipse cx="52" cy="85" rx="3" ry="2"/>
+    <ellipse cx="59" cy="82" rx="3" ry="2"/>
+    <ellipse cx="66" cy="85" rx="3" ry="2"/>
+    <ellipse cx="73" cy="82" rx="3" ry="2"/>
+  </g>
+  
+  <!-- Fire Elements -->
+  <g fill="#e17055" opacity="0.7">
+    <path d="M 25 30 Q 30 25 28 35 Q 32 30 30 40"/>
+    <path d="M 90 30 Q 95 25 93 35 Q 97 30 95 40"/>
+  </g>
+  
+  <!-- Dragon Horns -->
+  <g fill="#636e72" opacity="0.8">
+    <polygon points="48,35 50,28 52,35"/>
+    <polygon points="68,35 70,28 72,35"/>
+  </g>
+  
+  <!-- Gaming Elements -->
+  <circle cx="85" cy="90" r="8" fill="#d63031" opacity="0.8"/>
+  <text x="85" y="94" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">龙</text>
+  
+  <!-- Decorative Flames -->
+  <g transform="translate(15,85) rotate(-30)">
+    <path d="M 0 0 Q 5 -5 3 5 Q 8 0 6 10" fill="#e17055" opacity="0.6"/>
+  </g>
+</svg>

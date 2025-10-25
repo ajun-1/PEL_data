@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>联盟生态大盘 - PEL生态数据看板</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+  <script src="js/echarts.min.js"></script>
+  <style>
+    /* 布局与标题 */
+    .page-container { padding: 24px; max-width: 1600px; margin: 0 auto; }
+    .page-title { font-size: 28px; font-weight: 700; color: #fff; margin: 0 0 6px; }
+    .page-subtitle { color: var(--light-100); margin: 0 0 16px; }
+
+    /* KPI 指标 */
+    .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 16px; }
+    .kpi-card { background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); padding: 16px; transition: transform .2s ease, box-shadow .2s ease; }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+    .kpi-value { font-size: 24px; font-weight: 700; color: #fff; }
+    .kpi-label { color:#C9CDD4; font-size: 12px; margin-top: 4px; }
+    .kpi-trend { margin-top: 8px; font-size: 12px; color: #9AA4B2; }
+    .kpi-up { color: var(--success-color); } .kpi-down { color: var(--danger-color); } .kpi-flat { color: #FFD60A; }
+
+    /* 子指标 */
+    .subkpi-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:16px; margin-bottom:16px; }
+    .subkpi-card { background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); padding: 16px; }
+    .subkpi-title { color:#C9CDD4; font-size:12px; margin-bottom:6px; }
+    .subkpi-value { color:#fff; font-size:18px; font-weight:700; }
+    
+    /* 俱乐部头像样式 */
+    .club-avatars { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .club-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #4E5969; overflow: hidden; transition: all 0.3s ease; }
+    .club-avatar:hover { border-color: var(--primary-color); transform: scale(1.1); }
+    .club-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* 洞察摘要 */
+    .insight-box { background: var(--dark-100); border:1px solid var(--dark-200); border-radius: var(--border-radius); padding: 12px 16px; margin-bottom: 16px; color:#C9CDD4; }
+
+    /* 图表面板 */
+    .panel-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .panel { background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); }
+    .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--dark-200); display:flex; align-items:center; justify-content:space-between; }
+    .panel-title { color:#fff; font-weight:600; display:flex; align-items:center; gap:8px; }
+    .panel-actions { display:flex; gap:8px; }
+    .btn { padding:6px 10px; border-radius:6px; background:#2E333B; border:1px solid #4E5969; color:#fff; font-size:12px; cursor:pointer; transition:all .2s ease; }
+    .btn:hover { background:#3A3F47; border-color:#6B778C; }
+    .select { padding:6px 10px; border-radius:6px; background:#2E333B; border:1px solid #4E5969; color:#fff; font-size:12px; }
+    .panel-body { padding: 12px 16px; }
+    .chart { height: 360px; }
+
+    /* 表格与分页 */
+    .table-panel { background: var(--dark-100); border:1px solid var(--dark-200); border-radius: var(--border-radius); }
+    .table-toolbar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--dark-200); }
+    .search-input { width: 240px; background:#2E333B; border:1px solid #4E5969; color:#fff; border-radius:6px; padding:6px 10px; }
+    table { width:100%; border-collapse:collapse; }
+    thead th { text-align:left; color:#C9CDD4; font-weight:600; padding:10px 12px; border-bottom:1px solid var(--dark-200); cursor:pointer; }
+    tbody td { padding:10px 12px; border-bottom:1px solid var(--dark-200); color:#fff; }
+    tbody tr:hover { background:#2E333B; }
+    .status-badge { padding:4px 8px; border-radius:12px; font-size:12px; }
+    .status-good { background:#00B42A22; color:#00B42A; }
+    .status-normal { background:#165DFF22; color:#165DFF; }
+    .status-warning { background:#FF7D0022; color:#FF7D00; }
+    .status-danger { background:#F53F3F22; color:#F53F3F; }
+    .action-link { color: var(--primary-color); }
+    .pagination { display:flex; gap:8px; padding: 10px 16px; }
+    .page { display:inline-block; padding:4px 8px; border-radius:6px; background:#2E333B; border:1px solid #4E5969; color:#fff; cursor:pointer; }
+    .page.active { background: var(--primary-color); border-color: var(--primary-color); }
+
+    @media (max-width: 1200px) { .panel-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 768px) { .kpi-grid { grid-template-columns: 1fr; } }
+    /* 弹窗样式 */
+    .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.55); z-index: 9999; }
+    .modal.show { display: flex; }
+    .modal-box { width: 820px; max-width: 92vw; background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); box-shadow: 0 12px 36px rgba(0,0,0,.5); }
+    .modal-header { display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid var(--dark-200); }
+    .modal-body { padding: 12px 16px; }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航：由 common.js 动态生成 -->
+  <header class="top-nav"></header>
+  <!-- 侧边栏导航（由脚本动态生成） -->
+  <aside class="sidebar"></aside>
+  <!-- 主内容区域 -->
+  <main class="main-content">
+    <div class="page-container">
+    <div class="page-header">
+      <h2 class="page-title">联盟生态健康度深度分析——数据概览</h2>
+      <p class="page-subtitle"></p>
+    </div>
+
+    <!-- 顶部 KPI -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value">82.5</div>
+        <div class="kpi-label">联盟健康指数</div>
+        <div class="kpi-trend kpi-up">较上期 +2.3%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">85.8</div>
+        <div class="kpi-label">联盟竞争力</div>
+        <div class="kpi-trend kpi-up">较上期 +1.9%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">80.3</div>
+        <div class="kpi-label">运营能力</div>
+        <div class="kpi-trend kpi-flat">较上期 +0.2%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">80.3</div>
+        <div class="kpi-label">管理效能</div>
+        <div class="kpi-trend kpi-down">较上期 -0.4%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">85.8</div>
+        <div class="kpi-label">品牌竞争力</div>
+        <div class="kpi-trend kpi-up">较上期 +1.3%</div>
+      </div>
+    </section>
+
+    <!-- 子 KPI -->
+    <section class="subkpi-grid">
+      <div class="subkpi-card">
+        <div class="subkpi-title">健康俱乐部</div>
+        <div class="subkpi-value">16 家</div>
+        <div class="club-avatars">
+          <div class="club-avatar"><img src="images/ag-logo-new.svg" alt="AG" title="AG"></div>
+          <div class="club-avatar"><img src="images/4am-logo-new.svg" alt="4AM" title="4AM"></div>
+          <div class="club-avatar"><img src="images/tianba-logo-new.svg" alt="Tianba" title="Tianba"></div>
+          <div class="club-avatar"><img src="images/nv-logo-new.svg" alt="NV" title="NV"></div>
+          <!-- 更多俱乐部头像可以根据需要添加 -->
+        </div>
+      </div>
+      <div class="subkpi-card">
+        <div class="subkpi-title">风险俱乐部</div>
+        <div class="subkpi-value">1 家</div>
+        <div class="club-avatars">
+          <div class="club-avatar"><img src="images/tianba-logo-new.svg" alt="Tianba" title="Tianba"></div>
+        </div>
+      </div>
+      <div class="subkpi-card">
+        <div class="subkpi-title">预警俱乐部</div>
+        <div class="subkpi-value">2 家</div>
+        <div class="club-avatars">
+          <div class="club-avatar"><img src="images/ag-logo-new.svg" alt="AG" title="AG"></div>
+          <div class="club-avatar"><img src="images/nv-logo-new.svg" alt="RSG" title="RSG"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 洞察摘要 -->
+    <div class="insight-box">
+      当前联盟整体健康指数为 82.5，较上期提升 2.3%。商业价值与营业收入同步增长，运营能力基本稳定。需要关注部分俱乐部资金池与社媒增长率的放缓趋势。
+    </div>
+
+    <!-- 图表面板 -->
+    <section class="panel-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title"><i class="fa-solid fa-chart-radar"></i> 生态健康度维度对比</h3>
+          <div class="panel-actions">
+            <select id="clubCompareSelect" class="select"></select>
+            <button id="toggleClub" class="btn">显示/隐藏俱乐部</button>
+            <button id="toggleAvg" class="btn">显示/隐藏 联盟平均</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="radarChart" class="chart"></div>
+          <p class="page-subtitle">说明：展示联盟平均与样本俱乐部在五大维度上的对比。</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title"><i class="fa-solid fa-chart-line"></i> 联盟整体健康度水平趋势</h3>
+          <div class="panel-actions">
+            <button id="addPoint" class="btn">追加数据点</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="trendChart" class="chart"></div>
+          <p class="page-subtitle">说明：近五个周期的健康度变化趋势。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 俱乐部健康度评估表 -->
+    <section class="table-panel">
+      <div class="table-toolbar">
+        <div class="panel-title"><i class="fa-solid fa-table"></i> 俱乐部健康度评估表</div>
+        <input id="clubSearch" class="search-input" type="text" placeholder="按俱乐部搜索…" />
+      </div>
+      <div class="table-wrap">
+        <table id="clubTable">
+          <thead>
+            <tr>
+              <th data-key="rank">排名</th>
+              <th data-key="club">俱乐部</th>
+              <th data-key="score">健康度评分</th>
+              <th data-key="finance">财务稳定性</th>
+              <th data-key="competition">赛事竞争力</th>
+              <th data-key="operation">运营能力</th>
+              <th data-key="brand">品牌竞争力</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="pagination" class="pagination"></div>
+    </section>
+    </div>
+  </main>
+
+  <!-- 雷达图弹窗 -->
+  <div id="radarModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="panel-title"><i class="fa-solid fa-chart-radar"></i> 雷达图</div>
+        <button id="modalClose" class="btn">关闭</button>
+      </div>
+      <div class="modal-body">
+        <div id="modalRadar" class="chart"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // ---------------- 雷达图 ----------------
+      let radar = null;
+      let showAvg = true, showClub = true;
+      const hasEcharts = typeof echarts !== 'undefined';
+      const radarOption = {
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'item' },
+        legend: { data: ['联盟平均', '样本俱乐部'], textStyle: { color: '#C9CDD4' } },
+        radar: {
+          indicator: [
+            { name: '财务稳定性', max: 100 },
+            { name: '赛事竞争力', max: 100 },
+            { name: '运营能力', max: 100 },
+            { name: '品牌竞争力', max: 100 },
+            { name: '管理效能', max: 100 }
+          ],
+          splitNumber: 4,
+          axisName: { color: '#C9CDD4' },
+          splitLine: { lineStyle: { color: '#4E5969' } },
+          splitArea: { areaStyle: { color: ['transparent'] } },
+        },
+        series: [
+          { name: '联盟平均', type: 'radar',
+            areaStyle: { color: 'rgba(22,93,255,0.15)', opacity: 0.15 },
+            lineStyle: { color: '#165DFF', opacity: 1 },
+            data: [ [80, 85, 82, 79, 81] ]
+          },
+          { name: '样本俱乐部', type: 'radar',
+            areaStyle: { color: 'rgba(0,212,170,0.15)', opacity: 0.15 },
+            lineStyle: { color: '#00D4AA', opacity: 1 },
+            data: [ [92, 94, 90, 91, 89] ]
+          }
+        ]
+      };
+      if (hasEcharts) {
+        const radarDom = document.getElementById('radarChart');
+        radar = echarts.init(radarDom);
+        radar.setOption(radarOption);
+        document.getElementById('toggleAvg')?.addEventListener('click', () => {
+           showAvg = !showAvg;
+           radarOption.series[0].lineStyle.opacity = showAvg ? 1 : 0;
+           radarOption.series[0].areaStyle.opacity = showAvg ? 0.15 : 0;
+           radarOption.series[0].silent = !showAvg;
+           radar.setOption(radarOption);
+         });
+         document.getElementById('toggleClub')?.addEventListener('click', () => {
+           showClub = !showClub;
+           radarOption.series[1].lineStyle.opacity = showClub ? 1 : 0;
+           radarOption.series[1].areaStyle.opacity = showClub ? 0.15 : 0;
+           radarOption.series[1].silent = !showClub;
+           radar.setOption(radarOption);
+         });
+       }
+
+      // ---------------- 趋势图 ----------------
+      let trend = null;
+      const trendCats = ['2023Q1', '2023Q2', '2023Q3', '2023Q4', '2024Q1'];
+      const trendData = [78.0, 80.1, 82.0, 83.2, 84.7];
+      const trendOption = {
+        tooltip: { trigger: 'axis', backgroundColor: 'rgba(0,0,0,.85)', borderColor: '#165dff', textStyle: { color:'#fff' } },
+        grid: { left: '3%', right: '3%', bottom: '8%', top: '8%', containLabel: true },
+        xAxis: { type: 'category', data: trendCats, axisLine: { lineStyle: { color: '#333' } }, axisLabel: { color: '#C9CDD4' } },
+        yAxis: { type: 'value', min: 60, max: 100, axisLine: { lineStyle: { color: '#333' } }, axisLabel: { color: '#C9CDD4' }, splitLine: { lineStyle: { color: '#333' } } },
+        series: [{ name: '联盟健康度', type: 'line', smooth: true, data: trendData, lineStyle: { color: '#165dff', width: 2 }, areaStyle: { color: 'rgba(22,93,255,.12)' }, symbol: 'circle', symbolSize: 6 }]
+      };
+      if (hasEcharts) {
+        const trendDom = document.getElementById('trendChart');
+        trend = echarts.init(trendDom);
+        trend.setOption(trendOption);
+      }
+      function prevQuarterLabel(first) {
+        const m = first.match(/(\d{4})Q(\d)/);
+        if (!m) return first;
+        let y = parseInt(m[1], 10), q = parseInt(m[2], 10);
+        q -= 1; if (q < 1) { q = 4; y -= 1; }
+        return `${y}Q${q}`;
+      }
+      document.getElementById('addPoint')?.addEventListener('click', () => {
+        const prev = prevQuarterLabel(trendCats[0]);
+        trendCats.unshift(prev);
+        const first = trendData[0];
+        const change = (Math.random() * 2 - 1);
+        const prevVal = Math.max(60, Math.min(100, +(first - change).toFixed(1)));
+        trendData.unshift(prevVal);
+        if (hasEcharts && trend) {
+          trend.setOption({ xAxis: { data: trendCats }, series: [{ data: trendData }] });
+        }
+      });
+
+      // ---------------- 表格交互：排序、搜索、分页 ----------------
+      const data = [
+        { rank:1, club:'TT', score:92.4, finance:94.2, competition:95.8, operation:90.4, brand:91.5, status:'良好' },
+        { rank:2, club:'Tianba', score:90.8, finance:91.5, competition:94.2, operation:88.6, brand:89.7, status:'良好' },
+        { rank:3, club:'WBG', score:88.4, finance:89.2, competition:92.0, operation:87.1, brand:86.3, status:'正常' },
+        { rank:4, club:'JDG', score:85.2, finance:87.5, competition:90.4, operation:85.7, brand:83.2, status:'正常' },
+        { rank:5, club:'TC', score:83.7, finance:84.3, competition:87.3, operation:82.1, brand:82.5, status:'正常' },
+        { rank:6, club:'STE', score:81.6, finance:82.1, competition:85.0, operation:80.7, brand:81.2, status:'正常' },
+        { rank:7, club:'LGD', score:79.4, finance:80.3, competition:82.7, operation:78.2, brand:79.5, status:'关注' },
+        { rank:8, club:'RW', score:77.9, finance:79.0, competition:80.6, operation:76.5, brand:77.1, status:'关注' },
+        { rank:9, club:'AG', score:76.8, finance:77.2, competition:79.3, operation:75.4, brand:76.0, status:'关注' },
+        { rank:10, club:'VS', score:75.2, finance:76.0, competition:78.1, operation:74.2, brand:75.0, status:'风险' },
+        { rank:11, club:'TJB', score:74.6, finance:75.1, competition:77.2, operation:73.5, brand:74.7, status:'风险' },
+        { rank:12, club:'NV', score:73.3, finance:74.0, competition:76.0, operation:72.1, brand:73.8, status:'风险' },
+        { rank:13, club:'4AM', score:72.1, finance:73.2, competition:75.4, operation:71.3, brand:72.5, status:'风险' },
+        { rank:14, club:'KSG', score:71.0, finance:72.1, competition:74.2, operation:70.1, brand:71.3, status:'风险' },
+        { rank:15, club:'ACT', score:69.8, finance:70.9, competition:73.0, operation:68.9, brand:70.1, status:'风险' },
+        { rank:16, club:'KBG', score:68.5, finance:69.6, competition:71.8, operation:67.7, brand:68.9, status:'风险' },
+        { rank:17, club:'RSG', score:67.2, finance:68.3, competition:70.5, operation:66.4, brand:67.6, status:'风险' },
+        { rank:18, club:'ST', score:65.9, finance:67.0, competition:69.2, operation:65.1, brand:66.3, status:'风险' },
+        { rank:19, club:'TEC', score:64.6, finance:65.7, competition:67.9, operation:63.8, brand:65.0, status:'风险' },
+        { rank:20, club:'KONE', score:63.3, finance:64.4, competition:66.6, operation:62.5, brand:63.7, status:'风险' }
+      ];
+      const state = { sortKey: null, sortAsc: true, page: 1, pageSize: 8, search: '' };
+
+      const tbody = document.querySelector('#clubTable tbody');
+      const searchInput = document.getElementById('clubSearch');
+      const pagination = document.getElementById('pagination');
+
+      function getStatusClass(s) {
+        switch(s) {
+          case '良好': return 'status-good';
+          case '正常': return 'status-normal';
+          case '关注': return 'status-warning';
+          case '风险': return 'status-danger';
+          default: return 'status-normal';
+        }
+      }
+
+      function applySearch(d) {
+        const q = state.search.trim().toLowerCase();
+        if (!q) return d.slice();
+        return d.filter(item => item.club.toLowerCase().includes(q));
+      }
+
+      function applySort(d) {
+        if (!state.sortKey) return d.slice();
+        const key = state.sortKey;
+        const asc = state.sortAsc ? 1 : -1;
+        return d.slice().sort((a,b) => {
+          const va = a[key], vb = b[key];
+          return (va > vb ? 1 : va < vb ? -1 : 0) * asc;
+        });
+      }
+
+      function renderPagination(total) {
+        const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+        if (state.page > totalPages) state.page = totalPages;
+        pagination.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+          const btn = document.createElement('span');
+          btn.className = 'page' + (i === state.page ? ' active' : '');
+          btn.textContent = i;
+          btn.addEventListener('click', () => { state.page = i; renderTable(); });
+          pagination.appendChild(btn);
+        }
+      }
+
+      function renderTable() {
+        const searched = applySearch(data);
+        const sorted = applySort(searched);
+        const start = (state.page - 1) * state.pageSize;
+        const pageItems = sorted.slice(start, start + state.pageSize);
+
+        tbody.innerHTML = pageItems.map(item => `
+          <tr>
+            <td>${item.rank}</td>
+            <td>${item.club}</td>
+            <td>${item.score.toFixed(1)}</td>
+            <td>${item.finance.toFixed(1)}</td>
+            <td>${item.competition.toFixed(1)}</td>
+            <td>${item.operation.toFixed(1)}</td>
+            <td>${item.brand.toFixed(1)}</td>
+            <td><span class="status-badge ${getStatusClass(item.status)}">${item.status}</span></td>
+            <td><button type="button" class="btn radar-btn">雷达图</button></td>
+          </tr>
+        `).join('');
+        renderPagination(sorted.length);
+      }
+
+      document.querySelectorAll('#clubTable thead th[data-key]').forEach(th => {
+        th.addEventListener('click', () => {
+          const key = th.getAttribute('data-key');
+          if (state.sortKey === key) { state.sortAsc = !state.sortAsc; }
+          else { state.sortKey = key; state.sortAsc = true; }
+          state.page = 1; renderTable();
+        });
+      });
+
+      searchInput.addEventListener('input', () => {
+        state.search = searchInput.value; state.page = 1; renderTable();
+      });
+
+      renderTable();
+
+      // 俱乐部雷达对比：下拉与“对比AG俱乐部数据”按钮
+      const clubSelect = document.getElementById('clubCompareSelect');
+      const compareAGBtn = document.getElementById('compareAG');
+      function getClubMetrics(clubName) {
+        const item = data.find(d => d.club === clubName);
+        if (!item) return [80, 85, 82, 79, 81];
+        return [item.finance, item.competition, item.operation, item.brand, item.score];
+      }
+      function updateRadarForClub(clubName) {
+        if (!hasEcharts || !radar) return;
+        radarOption.series[1].name = clubName;
+        radarOption.series[1].data = [getClubMetrics(clubName)];
+        radar.setOption(radarOption);
+      }
+      if (clubSelect) {
+         clubSelect.innerHTML = data.map(d => `<option value="${d.club}">${d.club}</option>`).join('');
+         clubSelect.value = 'AG';
+                updateRadarForClub('AG');
+         clubSelect.addEventListener('change', () => updateRadarForClub(clubSelect.value));
+       }
+
+      // 事件委托：打开雷达图弹窗
+      const modal = document.getElementById('radarModal');
+      const modalCloseBtn = document.getElementById('modalClose');
+      let modalRadar = null;
+
+      function openModalRadar() {
+        modal.classList.add('show');
+        if (!hasEcharts) return;
+        const dom = document.getElementById('modalRadar');
+        if (!modalRadar) modalRadar = echarts.init(dom);
+        modalRadar.setOption(radarOption, true);
+      }
+      function closeModalRadar() {
+        modal.classList.remove('show');
+        if (modalRadar) { modalRadar.dispose(); modalRadar = null; }
+      }
+      modalCloseBtn?.addEventListener('click', closeModalRadar);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModalRadar(); });
+
+      tbody.addEventListener('click', (e) => {
+        const btn = e.target.closest('.radar-btn');
+        if (!btn) return;
+        openModalRadar();
+      });
+
+      // 响应式
+      window.addEventListener('resize', () => { if (hasEcharts) { radar && radar.resize(); trend && trend.resize(); modalRadar && modalRadar.resize(); } });
+    });
+  </script>
+  <script src="js/common.js"></script>
+</body>
+</html>
+

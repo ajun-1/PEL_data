@@ -1,0 +1,76 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00b894;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00cec9;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="faceGradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffeaa7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fdcb6e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#74b9ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0984e3;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow4" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGradient4)" stroke="#fff" stroke-width="4" filter="url(#shadow4)"/>
+  
+  <!-- Face -->
+  <circle cx="60" cy="50" r="25" fill="url(#faceGradient4)"/>
+  
+  <!-- Glasses -->
+  <circle cx="52" cy="45" r="8" fill="none" stroke="#2d3436" stroke-width="2"/>
+  <circle cx="68" cy="45" r="8" fill="none" stroke="#2d3436" stroke-width="2"/>
+  <line x1="60" y1="45" x2="60" y2="45" stroke="#2d3436" stroke-width="2"/>
+  
+  <!-- Eyes behind glasses -->
+  <circle cx="52" cy="45" r="3" fill="#2d3436"/>
+  <circle cx="68" cy="45" r="3" fill="#2d3436"/>
+  <circle cx="53" cy="44" r="1" fill="#fff"/>
+  <circle cx="69" cy="44" r="1" fill="#fff"/>
+  
+  <!-- Nose -->
+  <ellipse cx="60" cy="52" rx="1.5" ry="2" fill="#e17055"/>
+  
+  <!-- Mouth (Thoughtful) -->
+  <path d="M 56 58 Q 60 60 64 58" stroke="#2d3436" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Hair -->
+  <path d="M 35 45 Q 38 28 50 32 Q 60 25 70 32 Q 82 28 85 45 Q 82 35 75 36 Q 68 32 60 34 Q 52 32 45 36 Q 38 35 35 45" fill="#2d3436"/>
+  
+  <!-- Brain/Thought Bubble -->
+  <circle cx="45" cy="25" r="12" fill="url(#brainGradient)" opacity="0.7"/>
+  <path d="M 40 20 Q 42 18 45 20 Q 48 18 50 20 Q 48 22 45 22 Q 42 22 40 20" fill="#fff" opacity="0.8"/>
+  <circle cx="43" cy="28" r="2" fill="#fff" opacity="0.8"/>
+  <circle cx="47" cy="26" r="1.5" fill="#fff" opacity="0.8"/>
+  
+  <!-- Body/Shirt -->
+  <ellipse cx="60" cy="85" rx="35" ry="25" fill="#6c5ce7"/>
+  <rect x="25" y="75" width="70" height="30" fill="#6c5ce7" rx="5"/>
+  
+  <!-- Circuit Pattern on Shirt -->
+  <g stroke="#00cec9" stroke-width="1.5" fill="none" opacity="0.6">
+    <line x1="45" y1="80" x2="55" y2="80"/>
+    <line x1="65" y1="80" x2="75" y2="80"/>
+    <line x1="50" y1="85" x2="70" y2="85"/>
+    <circle cx="50" cy="80" r="2"/>
+    <circle cx="70" cy="85" r="2"/>
+    <rect x="58" y="88" width="4" height="4"/>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <polygon points="75,25 80,20 85,25 80,30" fill="#74b9ff" opacity="0.7"/>
+  <text x="80" y="28" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">💡</text>
+  
+  <polygon points="20,90 25,85 30,90 25,95" fill="#00b894" opacity="0.7"/>
+  <text x="25" y="93" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">⚡</text>
+  
+  <!-- Gaming Elements -->
+  <circle cx="90" cy="95" r="8" fill="#a29bfe" opacity="0.8"/>
+  <text x="90" y="99" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">思</text>
+</svg>

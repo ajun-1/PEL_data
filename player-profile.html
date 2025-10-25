@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选手个人履历 - PEL联盟生态数据大屏</title>
+    
+    <!-- 外部资源 -->
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+    <script src="js/echarts.min.js"></script>
+    
+    <!-- 本地样式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .profile-container {
+            padding: 24px;
+            max-width: 1590px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            margin-bottom: 32px;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin: 0 0 8px 0;
+        }
+        
+        .page-subtitle {
+            font-size: 16px;
+            color: #C9CDD4;
+            margin: 0;
+        }
+        
+        .search-section {
+            margin-bottom: 32px;
+        }
+        
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .search-input {
+            background: #2E333B;
+            border: 1px solid #4E5969;
+            border-radius: 4px;
+            padding: 12px 16px;
+            color: #FFFFFF;
+            font-size: 14px;
+            width: 300px;
+        }
+        
+        .search-input::placeholder {
+            color: #C9CDD4;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #FF6B35;
+        }
+        
+        .search-btn {
+            background: #74B9FF;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 16px;
+            color: #FFFFFF;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 48px;
+        }
+        
+        .search-btn:hover {
+            background: #5A9FFF;
+            transform: translateY(-1px);
+        }
+        
+        .search-btn:active {
+            transform: translateY(0);
+        }
+        
+        .player-profile-card {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .player-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .player-avatar-large {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #FF6B35, #FF9500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .player-info-main {
+            flex: 1;
+        }
+        
+        .player-name-large {
+            font-size: 36px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin: 0 0 8px 0;
+        }
+        
+        .player-badges {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .champion-badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1E2329;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .team-badge-large {
+            background: #4E5969;
+            color: #FFFFFF;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .player-basic-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #C9CDD4;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+        
+        .contract-progress {
+            background: #1E2329;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .contract-progress-bar {
+            background: linear-gradient(90deg, #00D4AA, #00B894);
+            height: 100%;
+            width: 60%;
+            border-radius: 20px;
+        }
+        
+        .rating-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .rating-score {
+            font-size: 48px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .star {
+            color: #FFD700;
+            font-size: 20px;
+        }
+        
+        .performance-section {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin: 0 0 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-icon {
+            color: #FF6B35;
+            font-size: 24px;
+        }
+        
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .performance-card {
+            background: #1E2329;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .performance-label {
+            font-size: 14px;
+            color: #C9CDD4;
+            margin-bottom: 8px;
+        }
+        
+        .performance-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .performance-value.kills {
+            color: #FF6B6B;
+        }
+        
+        .performance-value.damage {
+            color: #74B9FF;
+        }
+        
+        .performance-value.eliminations {
+            color: #00D4AA;
+        }
+        
+        .career-history {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .career-table-container {
+            background: #1E2329;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .career-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .career-table th {
+            background: #2E333B;
+            color: #FFFFFF;
+            font-weight: 600;
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #4E5969;
+        }
+        
+        .career-table td {
+            padding: 16px;
+            border-bottom: 1px solid #4E5969;
+            color: #FFFFFF;
+        }
+        
+        .career-table tr:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .rank-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .rank-1 {
+            background: #FFD700;
+            color: #1E2329;
+        }
+        
+        .rank-2 {
+            background: #C0C0C0;
+            color: #1E2329;
+        }
+        
+        .rank-3 {
+            background: #CD7F32;
+            color: #FFFFFF;
+        }
+        
+        .rank-other {
+            background: #4E5969;
+            color: #FFFFFF;
+        }
+        
+        .event-level {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .level-s {
+            background: #FF6B35;
+            color: #FFFFFF;
+        }
+        
+        .level-a {
+            background: #FFD60A;
+            color: #1E2329;
+        }
+        
+        .level-b {
+            background: #74B9FF;
+            color: #FFFFFF;
+        }
+        
+        /* 商业价值计算模块样式 */
+        .commercial-value {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .value-display {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .value-label {
+            font-size: 14px;
+            color: #C9CDD4;
+            margin-bottom: 8px;
+        }
+        
+        .value-amount {
+            font-size: 48px;
+            font-weight: 700;
+            color: #FFD60A;
+            margin-bottom: 4px;
+        }
+        
+        .value-subtitle {
+            font-size: 12px;
+            color: #86909C;
+        }
+        
+        .value-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .metric-item {
+            text-align: center;
+            padding: 16px;
+            background: #1E2329;
+            border-radius: 8px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #86909C;
+            margin-bottom: 4px;
+        }
+        
+        .metric-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+        
+        .metric-unit {
+            font-size: 12px;
+            color: #C9CDD4;
+        }
+        
+        .calculation-formula {
+            background: #1E2329;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 12px;
+            color: #86909C;
+            text-align: center;
+        }
+        
+        /* 转会记录模块样式 */
+        .transfer-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .transfer-card {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .violation-card {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .transfer-amount {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .amount-label {
+            font-size: 14px;
+            color: #C9CDD4;
+            margin-bottom: 8px;
+        }
+        
+        .amount-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #00D4AA;
+            margin-bottom: 4px;
+        }
+        
+        .amount-trend {
+            font-size: 12px;
+            color: #00D4AA;
+        }
+        
+        .transfer-list {
+            /* 为子元素添加垂直间距 */
+        }
+        
+        .transfer-list > * + * {
+            margin-top: 12px;
+        }
+        
+        .transfer-item {
+            background: #1E2329;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .transfer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .transfer-teams {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+        
+        .transfer-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFD60A;
+        }
+        
+        .transfer-date {
+            font-size: 12px;
+            color: #86909C;
+        }
+        
+        .view-all-btn {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid #4E5969;
+            border-radius: 8px;
+            color: #C9CDD4;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .view-all-btn:hover {
+            border-color: #FF6B35;
+            color: #FF6B35;
+        }
+        
+        /* 进行中事件模块样式 */
+        .ongoing-events {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .event-item {
+            background: #1E2329;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #FF6B35;
+        }
+        
+        .event-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        
+        .event-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 4px;
+        }
+        
+        .event-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-hot {
+            background: #FF6B35;
+            color: #FFFFFF;
+        }
+        
+        .status-normal {
+            background: #4E5969;
+            color: #FFFFFF;
+        }
+        
+        .event-description {
+            font-size: 12px;
+            color: #C9CDD4;
+            line-height: 1.4;
+        }
+        
+        .event-date {
+            font-size: 11px;
+            color: #86909C;
+            margin-top: 8px;
+        }
+        
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #2E333B;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #4E5969;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #C9CDD4;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: #4E5969;
+            color: #FFFFFF;
+        }
+        
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .modal-table th {
+            background: #1E2329;
+            color: #FFFFFF;
+            font-weight: 600;
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #4E5969;
+            font-size: 14px;
+        }
+        
+        .modal-table td {
+            padding: 16px;
+            border-bottom: 1px solid #4E5969;
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+        
+        .modal-table tr:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-warning {
+            background: #FF6B35;
+            color: #FFFFFF;
+        }
+        
+        .status-resolved {
+            background: #00D4AA;
+            color: #FFFFFF;
+        }
+        
+        .status-pending {
+            background: #FFD60A;
+            color: #1E2329;
+        }
+        
+        .amount-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #74B9FF;
+            color: #FFFFFF;
+        }
+        
+        @media (max-width: 768px) {
+            .transfer-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .value-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .value-amount {
+                font-size: 36px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 24px;
+                max-height: 90vh;
+            }
+            
+            .modal-table {
+                font-size: 12px;
+            }
+            
+            .modal-table th,
+            .modal-table td {
+                padding: 12px 8px;
+            }
+            .player-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .player-basic-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .career-table {
+                font-size: 12px;
+            }
+            
+            .career-table th,
+            .career-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航：由 common.js 动态生成 -->
+    <header class="top-nav"></header>
+
+    <!-- 侧边栏导航 -->
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">主菜单</div>
+                <div class="sidebar-menu">
+                    <!-- 联盟生态下拉菜单 -->
+                    <div class="sidebar-dropdown">
+                        <div class="sidebar-item sidebar-dropdown-toggle">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fa fa-globe"></i>
+                                <span>联盟生态</span>
+                            </div>
+                        </div>
+                        <div class="sidebar-submenu">
+                            <a href="alliance-overview.html" class="sidebar-submenu-item">
+                                <i class="fa fa-dashboard"></i>
+                                <span>联盟生态大盘</span>
+                            </a>
+                            <div class="sidebar-dropdown">
+                                <div class="sidebar-submenu-item sidebar-dropdown-toggle">
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="fa fa-bar-chart"></i>
+                                        <span>联盟生态深度分析</span>
+                                    </div>
+                                </div>
+                                <div class="sidebar-submenu" style="margin-left: 16px;">
+                                    <a href="alliance-dimension.html" class="sidebar-submenu-item">
+                                        <i class="fa fa-file-text-o"></i>
+                                        <span>分析报告</span>
+                                    </a>
+                                    <a href="alliance-indicators.html" class="sidebar-submenu-item">
+                                        <i class="fa fa-line-chart"></i>
+                                        <span>细分指标</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="club-overview.html" class="sidebar-item" data-page="club-overview">
+                        <i class="fa fa-building"></i>
+                        <span>俱乐部生态</span>
+                    </a>
+                    <a href="player-overview.html" class="sidebar-item active" data-page="player-overview">
+                        <i class="fa fa-user-circle-o"></i>
+                        <span>选手生态</span>
+                    </a>
+                    <a href="match-data.html" class="sidebar-item" data-page="match-data">
+                        <i class="fa fa-trophy"></i>
+                        <span>赛事数据</span>
+                    </a>
+                    <a href="system-settings.html" class="sidebar-item" data-page="system-settings">
+                        <i class="fa fa-cog"></i>
+                        <span>系统设置</span>
+                    </a>
+                    <a href="data-import.html" class="sidebar-item" data-page="data-import">
+                        <i class="fa fa-upload"></i>
+                        <span>数据导入</span>
+                    </a>
+                    <a href="import-log.html" class="sidebar-item" data-page="import-log">
+                        <i class="fa fa-list-alt"></i>
+                        <span>导入日志</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="profile-container">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">选手详情</h1>
+                <p class="page-subtitle">全面分析选手竞技表现、商业价值与发展潜力</p>
+            </div>
+
+            <!-- 搜索区域 -->
+            <div class="search-section">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="搜索选手..." id="playerSearch">
+                    <button class="search-btn" type="button">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 选手档案卡片 -->
+            <div class="player-profile-card">
+                <div class="player-header">
+                    <div class="player-avatar-large">司马</div>
+                    <div class="player-info-main">
+                        <h2 class="player-name-large">司马光</h2>
+                        <div class="player-badges">
+                            <span class="champion-badge">三冠王</span>
+                            <span class="team-badge-large">AG</span>
+                        </div>
+                        <div class="player-basic-info">
+                            <div class="info-item">
+                                <span class="info-label">俱乐部</span>
+                                <span class="info-value">AG战队</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">位置</span>
+                                <span class="info-value">突击手</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">年龄</span>
+                                <span class="info-value">21岁</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">签约日期</span>
+                                <span class="info-value">2024年3月15日</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">合同剩余年限</span>
+                            <span class="info-value">1.5年</span>
+                        </div>
+                        <div class="contract-progress">
+                            <div class="contract-progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="rating-section">
+                        <div>
+                            <div class="info-label">综合评分</div>
+                            <div class="rating-score">96.8</div>
+                            <div class="info-value">S级</div>
+                        </div>
+                        <div class="rating-stars">
+                            <i class="fa fa-star star"></i>
+                            <i class="fa fa-star star"></i>
+                            <i class="fa fa-star star"></i>
+                            <i class="fa fa-star star"></i>
+                            <i class="fa fa-star star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 选手竞技表现 -->
+            <div class="performance-section">
+                <h3 class="section-title">
+                    <i class="fa fa-trophy section-icon"></i>
+                    选手竞技表现
+                </h3>
+                <div class="performance-grid">
+                    <div class="performance-card">
+                        <div class="performance-label">场均击杀</div>
+                        <div class="performance-value kills">3.8</div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-label">场均伤害</div>
+                        <div class="performance-value damage">234.1</div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-label">本赛季总淘汰数</div>
+                        <div class="performance-value eliminations">135</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 选手商业价值计算 -->
+            <div class="commercial-value">
+                <h3 class="section-title">
+                    <i class="fa fa-calculator section-icon"></i>
+                    选手商业价值计算
+                </h3>
+                <div class="value-display">
+                    <div class="value-label">选手商业价值</div>
+                    <div class="value-amount">¥1,200万</div>
+                    <div class="value-subtitle">较上月上涨 8.5%</div>
+                </div>
+                <div class="value-metrics">
+                    <div class="metric-item">
+                        <div class="metric-label">合同剩余年限 <span class="metric-unit">(年)</span></div>
+                        <div class="metric-value">1.5</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">权重 <span class="metric-unit">(万元)</span></div>
+                        <div class="metric-value">¥60</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">竞技表现系数</div>
+                        <div class="metric-value">1.6</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">计算结果 <span class="metric-unit">(万元)</span></div>
+                        <div class="metric-value">¥1,200</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">操作</div>
+                        <div class="metric-value" style="color: #FF6B35;">查看合同</div>
+                    </div>
+                </div>
+                <div class="calculation-formula">
+                    选手商业价值 = Σ(合同剩余年限 × 年薪 × 竞技表现系数 × 商业影响力系数) + 潜在转会金额
+                </div>
+            </div>
+
+            <!-- 转会记录区域 -->
+            <div class="transfer-section">
+                <!-- 违规记录 -->
+                <div class="violation-card">
+                    <h3 class="section-title">
+                        <i class="fa fa-exclamation-triangle section-icon"></i>
+                        违规记录
+                    </h3>
+                    <div class="transfer-list">
+                        <div class="transfer-item">
+                            <div class="transfer-header">
+                                <span class="transfer-teams">比赛中不当行为</span>
+                                <span class="transfer-price">警告处罚</span>
+                            </div>
+                            <div class="transfer-date">2024.11月</div>
+                        </div>
+                        <div class="transfer-item">
+                            <div class="transfer-header">
+                                <span class="transfer-teams">私接粉丝事件</span>
+                                <span class="transfer-price">内部处理</span>
+                            </div>
+                            <div class="transfer-date">2024.12月</div>
+                        </div>
+                    </div>
+                    <button class="view-all-btn">查看全部违规记录</button>
+                </div>
+
+                <!-- 转会记录 -->
+                <div class="transfer-card">
+                    <h3 class="section-title">
+                        <i class="fa fa-history section-icon"></i>
+                        转会记录
+                    </h3>
+                    <div class="transfer-list">
+                        <div class="transfer-item">
+                            <div class="transfer-header">
+                                <span class="transfer-teams">JDG战队→AG战队</span>
+                                <span class="transfer-price">转会价格¥1150万</span>
+                            </div>
+                            <div class="transfer-date">2023.9月</div>
+                        </div>
+                        <div class="transfer-item">
+                            <div class="transfer-header">
+                                <span class="transfer-teams">JDG战队→AG战队</span>
+                                <span class="transfer-price">转会价格¥1150万</span>
+                            </div>
+                            <div class="transfer-date">2023.9月</div>
+                        </div>
+                    </div>
+                    <button class="view-all-btn">查看全部转会记录</button>
+                </div>
+            </div>
+
+            <!-- 进行中事件 -->
+            <div class="ongoing-events">
+                <h3 class="section-title">
+                    <i class="fa fa-clock-o section-icon"></i>
+                    进行中事件
+                </h3>
+                <div class="event-item">
+                    <div class="event-header">
+                        <div class="event-title">比赛合适违规不当</div>
+                        <span class="event-status status-hot">紧急</span>
+                    </div>
+                    <div class="event-description">在比赛中存在不当行为，需要进一步调查和处理</div>
+                    <div class="event-date">2024-12-1</div>
+                </div>
+                <div class="event-item">
+                    <div class="event-header">
+                        <div class="event-title">私接粉丝</div>
+                        <span class="event-status status-normal">警告</span>
+                    </div>
+                    <div class="event-description">选手私下接触粉丝，需要关注其行为规范</div>
+                    <div class="event-date">2024-12-1</div>
+                </div>
+            </div>
+
+            <!-- 职业生涯履历 -->
+            <div class="career-history">
+                <h3 class="section-title">
+                    <i class="fa fa-history section-icon"></i>
+                    AG司马光 - 职业生涯履历
+                </h3>
+                <div class="career-table-container">
+                    <table class="career-table">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>名次</th>
+                                <th>赛事等级</th>
+                                <th>赛事名称</th>
+                                <th>击杀数</th>
+                                <th>伤害</th>
+                                <th>奖金</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-06-15</td>
+                                <td><span class="rank-badge rank-1">1st</span></td>
+                                <td><span class="event-level level-s">S级</span></td>
+                                <td>PEL夏季赛总决赛</td>
+                                <td>42</td>
+                                <td>2,856</td>
+                                <td>¥500,000</td>
+                            </tr>
+                            <tr>
+                                <td>2024-05-20</td>
+                                <td><span class="rank-badge rank-2">2nd</span></td>
+                                <td><span class="event-level level-s">S级</span></td>
+                                <td>PEL春季赛季后赛</td>
+                                <td>38</td>
+                                <td>2,642</td>
+                                <td>¥300,000</td>
+                            </tr>
+                            <tr>
+                                <td>2024-04-10</td>
+                                <td><span class="rank-badge rank-1">1st</span></td>
+                                <td><span class="event-level level-a">A级</span></td>
+                                <td>城市挑战赛</td>
+                                <td>35</td>
+                                <td>2,458</td>
+                                <td>¥150,000</td>
+                            </tr>
+                            <tr>
+                                <td>2024-03-25</td>
+                                <td><span class="rank-badge rank-3">3rd</span></td>
+                                <td><span class="event-level level-s">S级</span></td>
+                                <td>国际邀请赛</td>
+                                <td>31</td>
+                                <td>2,234</td>
+                                <td>¥200,000</td>
+                            </tr>
+                            <tr>
+                                <td>2024-02-18</td>
+                                <td><span class="rank-badge rank-other">5th</span></td>
+                                <td><span class="event-level level-a">A级</span></td>
+                                <td>新春杯</td>
+                                <td>28</td>
+                                <td>2,156</td>
+                                <td>¥80,000</td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-12</td>
+                                <td><span class="rank-badge rank-1">1st</span></td>
+                                <td><span class="event-level level-b">B级</span></td>
+                                <td>青训联赛</td>
+                                <td>45</td>
+                                <td>3,124</td>
+                                <td>¥50,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 搜索功能
+        function performSearch() {
+            const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
+            console.log('搜索选手:', searchTerm);
+            // 这里可以添加实际的搜索逻辑
+            if (playerData[searchTerm]) {
+                updatePlayerProfile(playerData[searchTerm]);
+            }
+        }
+        
+        // 输入框搜索
+        document.getElementById('playerSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            console.log('搜索选手:', searchTerm);
+            // 这里可以添加实际的搜索逻辑
+        });
+        
+        // 搜索按钮点击事件
+        document.querySelector('.search-btn').addEventListener('click', performSearch);
+        
+        // 回车键搜索
+        document.getElementById('playerSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // 模拟选手数据切换
+        const playerData = {
+            '司马光': {
+                name: '司马光',
+                avatar: '司马',
+                badges: ['三冠王'],
+                team: 'AG战队',
+                position: '突击手',
+                age: '21岁',
+                signDate: '2024年3月15日',
+                contractYears: '1.5年',
+                rating: '96.8',
+                level: 'S级',
+                performance: {
+                    kills: '3.8',
+                    damage: '234.1',
+                    eliminations: '135'
+                }
+            },
+            '小新': {
+                name: '小新',
+                avatar: '小新',
+                badges: ['明星选手'],
+                team: 'AG战队',
+                position: '狙击手',
+                age: '23岁',
+                signDate: '2023年8月20日',
+                contractYears: '2.2年',
+                rating: '94.2',
+                level: 'S级',
+                performance: {
+                    kills: '3.5',
+                    damage: '245.8',
+                    eliminations: '128'
+                }
+            }
+        };
+
+        // 选手搜索和切换功能
+        document.getElementById('playerSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = e.target.value;
+                if (playerData[searchTerm]) {
+                    updatePlayerProfile(playerData[searchTerm]);
+                }
+            }
+        });
+
+        function updatePlayerProfile(data) {
+            // 更新选手信息显示
+            document.querySelector('.player-avatar-large').textContent = data.avatar;
+            document.querySelector('.player-name-large').textContent = data.name;
+            // 这里可以添加更多的数据更新逻辑
+        }
+
+
+    </script>
+    
+    <!-- 违规记录弹窗 -->
+    <div id="violationModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    违规记录详情
+                </h2>
+                <button class="modal-close" onclick="closeModal('violationModal')">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>违规类型</th>
+                        <th>详细描述</th>
+                        <th>处理结果</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024-12-01</td>
+                        <td>比赛违规</td>
+                        <td>在比赛中存在不当行为，影响比赛公平性</td>
+                        <td>警告处分</td>
+                        <td><span class="status-badge status-warning">处理中</span></td>
+                    </tr>
+                    <tr>
+                        <td>2024-12-01</td>
+                        <td>私接粉丝</td>
+                        <td>选手私下接触粉丝，违反职业规范</td>
+                        <td>内部处理</td>
+                        <td><span class="status-badge status-pending">待处理</span></td>
+                    </tr>
+                    <tr>
+                        <td>2024-11-15</td>
+                        <td>训练迟到</td>
+                        <td>多次训练迟到，影响团队训练效果</td>
+                        <td>口头警告</td>
+                        <td><span class="status-badge status-resolved">已解决</span></td>
+                    </tr>
+                    <tr>
+                        <td>2024-10-28</td>
+                        <td>社交媒体不当言论</td>
+                        <td>在社交媒体发表不当言论，影响战队形象</td>
+                        <td>公开道歉</td>
+                        <td><span class="status-badge status-resolved">已解决</span></td>
+                    </tr>
+                    <tr>
+                        <td>2024-09-12</td>
+                        <td>装备违规</td>
+                        <td>使用未经授权的游戏装备参加比赛</td>
+                        <td>罚款5000元</td>
+                        <td><span class="status-badge status-resolved">已解决</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- 转会记录弹窗 -->
+    <div id="transferModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fa fa-history"></i>
+                    转会记录详情
+                </h2>
+                <button class="modal-close" onclick="closeModal('transferModal')">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>转出战队</th>
+                        <th>转入战队</th>
+                        <th>转会费用</th>
+                        <th>合同期限</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2023-09-15</td>
+                        <td>JDG战队</td>
+                        <td>AG战队</td>
+                        <td><span class="amount-badge">¥1150万</span></td>
+                        <td>2年</td>
+                        <td><span class="status-badge status-resolved">已完成</span></td>
+                    </tr>
+                    <tr>
+                        <td>2022-03-20</td>
+                        <td>青训营</td>
+                        <td>JDG战队</td>
+                        <td><span class="amount-badge">¥680万</span></td>
+                        <td>1.5年</td>
+                        <td><span class="status-badge status-resolved">已完成</span></td>
+                    </tr>
+                    <tr>
+                        <td>2021-08-10</td>
+                        <td>自由选手</td>
+                        <td>青训营</td>
+                        <td><span class="amount-badge">¥50万</span></td>
+                        <td>1年</td>
+                        <td><span class="status-badge status-resolved">已完成</span></td>
+                    </tr>
+                    <tr>
+                        <td>2021-01-15</td>
+                        <td>业余战队</td>
+                        <td>自由选手</td>
+                        <td><span class="amount-badge">免费</span></td>
+                        <td>-</td>
+                        <td><span class="status-badge status-resolved">已完成</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // 弹窗功能
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+            document.body.style.overflow = 'auto'; // 恢复背景滚动
+        }
+        
+        // 点击遮罩层关闭弹窗
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+        
+        // ESC键关闭弹窗
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.show').forEach(modal => {
+                    closeModal(modal.id);
+                });
+            }
+        });
+        
+        // 绑定按钮点击事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 违规记录按钮
+            const violationBtn = document.querySelector('.violation-card .view-all-btn');
+            if (violationBtn) {
+                violationBtn.addEventListener('click', function() {
+                    openModal('violationModal');
+                });
+            }
+            
+            // 转会记录按钮
+            const transferBtn = document.querySelector('.transfer-card .view-all-btn');
+            if (transferBtn) {
+                transferBtn.addEventListener('click', function() {
+                    openModal('transferModal');
+                });
+            }
+        });
+    </script>
+
+<script src="js/common.js"></script>
+</body>
+</html>
+

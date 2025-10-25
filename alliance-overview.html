@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联盟生态 - PEL生态数据看板</title>
+    
+    <!-- 外部资源 -->
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+    <script src="js/echarts.min.js"></script>
+    
+    <!-- 本地样式 -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- 顶部导航：由 common.js 动态生成 -->
+    <header class="top-nav"></header>
+
+    <!-- 侧边栏导航（由脚本动态生成） -->
+    <aside class="sidebar"></aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="page-container">
+            <div class="page-header">
+                <h2 class="page-title">联盟生态大盘</h2>
+                <p class="page-subtitle">实时监控联盟整体运营状况与健康度</p>
+            </div>
+    
+            <!-- 顶部指标卡 -->
+            <section class="stats-row" aria-label="核心指标">
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="left"><i class="fa-solid fa-star"></i><span>健康指数</span></div>
+                  <div class="right"><i class="fa-solid fa-gear"></i></div>
+                </div>
+                <div class="stat-value"><span class="num">86.2</span><span class="unit">/100</span></div>
+                <div class="stat-trend trend-up">+2.3%</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="left"><i class="fa-solid fa-coins"></i><span>联盟总赞助额</span></div>
+                  <div class="right"><i class="fa-solid fa-gear"></i></div>
+                </div>
+                <div class="stat-value"><span class="num">¥1,280</span><span class="unit">万</span></div>
+                <div class="stat-trend trend-up">+5.2%</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="left"><i class="fa-solid fa-trophy"></i><span>联盟总价值</span></div>
+                  <div class="right"><i class="fa-solid fa-gear"></i></div>
+                </div>
+                <div class="stat-value"><span class="num">¥4.3</span><span class="unit">亿</span></div>
+                <div class="stat-trend trend-up">+3.8%</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="left"><i class="fa-solid fa-ranking-star"></i><span>正式选手</span></div>
+                  <div class="right"><i class="fa-solid fa-gear"></i></div>
+                </div>
+                <div class="stat-value"><span class="num">19</span><span class="unit">俱乐部</span></div>
+                <div class="stat-trend trend-stable">较上期 +3</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="left"><i class="fa-solid fa-user-group"></i><span>参赛选手</span></div>
+                  <div class="right"><i class="fa-solid fa-gear"></i></div>
+                </div>
+                <div class="stat-value"><span class="num">124</span><span class="unit">人</span></div>
+                <div class="stat-trend trend-down">-2.4%</div>
+              </div>
+            </section>
+    
+            <!-- 中部图表区 -->
+            <section class="charts-row">
+              <!-- 左：雷达图 -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fa-solid fa-chart-radar"></i> 生态健康度维度分析</h3>
+                  <div class="card-actions">
+                    <select class="season-dropdown">
+                      <option value="current">当前赛季</option>
+                      <option value="previous1">前1个赛季</option>
+                      <option value="previous2">前2个赛季</option>
+                      <option value="previous3">前3个赛季</option>
+                      <option value="previous4">前4个赛季</option>
+                      <option value="previous5">前5个赛季</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-body"><div id="ecoRadar" class="chart-box" aria-label="生态维度雷达图"></div></div>
+              </div>
+              <!-- 中：双柱图 -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fa-solid fa-chart-column"></i> 俱乐部整体价值趋势</h3>
+                  <div class="card-actions">
+                    <select class="season-dropdown">
+                      <option value="current">当前赛季</option>
+                      <option value="previous1">前1个赛季</option>
+                      <option value="previous2">前2个赛季</option>
+                      <option value="previous3">前3个赛季</option>
+                      <option value="previous4">前4个赛季</option>
+                      <option value="previous5">前5个赛季</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-body"><div id="clubValueBar" class="chart-box" aria-label="俱乐部价值双系列柱图"></div></div>
+              </div>
+              <!-- 右：标签筛选 -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fa-solid fa-filter"></i> 价值档位筛选</h3>
+                </div>
+                <div class="card-body tag-panel">
+                  <div>
+                    <div class="tag-group-title">金额档位</div>
+                    <div class="tag-list" id="tierTags">
+                      <span class="tag active" data-tier="all">全部</span>
+                      <span class="tag" data-tier="2000">2000W+</span>
+                      <span class="tag" data-tier="1500">1500W+</span>
+                      <span class="tag" data-tier="1000">1000W+</span>
+                      <span class="tag" data-tier="500">500W+</span>
+                      <span class="tag" data-tier="200">200W+</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="tag-group-title">俱乐部</div>
+                    <div class="tag-list">
+                      <span class="tag">TT</span><span class="tag">Tianba</span><span class="tag">WBG</span>
+                      <span class="tag">JDG</span><span class="tag">TC</span><span class="tag">STE</span>
+                      <span class="tag">LGD</span><span class="tag">RW</span><span class="tag">AG</span>
+                      <span class="tag">VS</span><span class="tag">TJB</span><span class="tag">NV</span>
+                      <span class="tag">4AM</span><span class="tag">KSG</span><span class="tag">ACT</span>
+                      <span class="tag">KBG</span><span class="tag">RSG</span><span class="tag">ST</span>
+                      <span class="tag">TEC</span><span class="tag">KONE</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+    
+            <!-- 下部：动态 + 排行 -->
+            <section class="bottom-row">
+              <!-- 左：关键动态 -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fa-regular fa-bell"></i> 关键动态</h3>
+                </div>
+                <div class="card-body news-list">
+                  <div class="news-item"><div class="news-title"><i class="fa-solid fa-circle-info"></i> XX俱乐部签约XX赞助商</div><div class="news-date">2025.03.01</div></div>
+                  <div class="news-item"><div class="news-title"><i class="fa-solid fa-circle-info"></i> XX俱乐部获得季军荣誉</div><div class="news-date">2025.02.24</div></div>
+                  <div class="news-item"><div class="news-title"><i class="fa-solid fa-circle-info"></i> 联盟公布新赛季积分规则</div><div class="news-date">2025.02.10</div></div>
+                  <div class="news-item"><div class="news-title"><i class="fa-solid fa-circle-info"></i> XX俱乐部完成内部架构调整</div><div class="news-date">2025.01.28</div></div>
+                </div>
+              </div>
+    
+              <!-- 中：俱乐部整体价值排名 -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fa-solid fa-trophy"></i> 俱乐部整体价值排名</h3>
+                  <div class="card-actions">
+                    <select id="club-status-filter" class="filter-select">
+                      <option value="全部">全部</option>
+                      <option value="2000w+">2000w+</option>
+                      <option value="1500w+">1500w+</option>
+                      <option value="1000w+">1000w+</option>
+                      <option value="500w+">500w+</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-body table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>排名</th><th>俱乐部</th><th>整体价值</th><th>同比变化</th><th>健康度评分</th><th>状态</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1</td>
+                        <td class="club-cell"><div class="club-logo logo-TT">TT</div><span>TT战队</span></td>
+                        <td>¥2,180万</td>
+                        <td style="color:var(--success-color)">+12.5%</td>
+                        <td>92.6</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>2</td>
+                        <td class="club-cell"><div class="club-logo logo-TB">TB</div><span>Tianba战队</span></td>
+                        <td>¥2,050万</td>
+                        <td style="color:var(--success-color)">+8.2%</td>
+                        <td>90.8</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>3</td>
+                        <td class="club-cell"><div class="club-logo logo-WBG">WBG</div><span>WBG战队</span></td>
+                        <td>¥1,960万</td>
+                        <td style="color:var(--success-color)">+15.7%</td>
+                        <td>89.4</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>4</td>
+                        <td class="club-cell"><div class="club-logo logo-JDG">JDG</div><span>JDG战队</span></td>
+                        <td>¥1,860万</td>
+                        <td style="color:var(--success-color)">+10.3%</td>
+                        <td>88.4</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>5</td>
+                        <td class="club-cell"><div class="club-logo logo-TC">TC</div><span>TC战队</span></td>
+                        <td>¥1,720万</td>
+                        <td style="color:var(--success-color)">+7.1%</td>
+                        <td>87.2</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>6</td>
+                        <td class="club-cell"><div class="club-logo logo-STE">STE</div><span>STE战队</span></td>
+                        <td>¥1,650万</td>
+                        <td style="color:var(--success-color)">+5.8%</td>
+                        <td>86.1</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>7</td>
+                        <td class="club-cell"><div class="club-logo logo-LGD">LGD</div><span>LGD战队</span></td>
+                        <td>¥1,590万</td>
+                        <td style="color:var(--success-color)">+4.3%</td>
+                        <td>85.7</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>8</td>
+                        <td class="club-cell"><div class="club-logo logo-RW">RW</div><span>RW战队</span></td>
+                        <td>¥1,520万</td>
+                        <td style="color:var(--success-color)">+3.2%</td>
+                        <td>84.9</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>9</td>
+                        <td class="club-cell"><div class="club-logo logo-AG">AG</div><span>AG战队</span></td>
+                        <td>¥1,480万</td>
+                        <td style="color:var(--danger-color)">-2.1%</td>
+                        <td>84.2</td>
+                        <td><span class="status-dot mid"></span>注意</td>
+                      </tr>
+                      <tr>
+                        <td>10</td>
+                        <td class="club-cell"><div class="club-logo logo-VS">VS</div><span>VS战队</span></td>
+                        <td>¥1,420万</td>
+                        <td style="color:var(--success-color)">+2.8%</td>
+                        <td>83.5</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>11</td>
+                        <td class="club-cell"><div class="club-logo logo-TJB">TJB</div><span>TJB战队</span></td>
+                        <td>¥1,380万</td>
+                        <td style="color:var(--success-color)">+1.9%</td>
+                        <td>82.8</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>12</td>
+                        <td class="club-cell"><div class="club-logo logo-NV">NV</div><span>NV战队</span></td>
+                        <td>¥1,320万</td>
+                        <td style="color:var(--success-color)">+1.5%</td>
+                        <td>82.1</td>
+                        <td><span class="status-dot ok"></span>健康</td>
+                      </tr>
+                      <tr>
+                        <td>13</td>
+                        <td class="club-cell"><div class="club-logo logo-4AM">4AM</div><span>4AM战队</span></td>
+                        <td>¥1,280万</td>
+                        <td style="color:var(--warning-color)">+0.8%</td>
+                        <td>81.4</td>
+                        <td><span class="status-dot mid"></span>注意</td>
+                      </tr>
+                      <tr>
+                        <td>14</td>
+                        <td class="club-cell"><div class="club-logo logo-KSG">KSG</div><span>KSG战队</span></td>
+                        <td>¥1,220万</td>
+                        <td style="color:var(--danger-color)">-1.2%</td>
+                        <td>80.7</td>
+                        <td><span class="status-dot mid"></span>注意</td>
+                      </tr>
+                      <tr>
+                        <td>15</td>
+                        <td class="club-cell"><div class="club-logo logo-ACT">ACT</div><span>ACT战队</span></td>
+                        <td>¥1,180万</td>
+                        <td style="color:var(--danger-color)">-2.5%</td>
+                        <td>79.9</td>
+                        <td><span class="status-dot mid"></span>注意</td>
+                      </tr>
+                      <tr>
+                        <td>16</td>
+                        <td class="club-cell"><div class="club-logo logo-KBG">KBG</div><span>KBG战队</span></td>
+                        <td>¥1,120万</td>
+                        <td style="color:var(--danger-color)">-3.8%</td>
+                        <td>78.2</td>
+                        <td><span class="status-dot warning"></span>预警</td>
+                      </tr>
+                      <tr>
+                        <td>17</td>
+                        <td class="club-cell"><div class="club-logo logo-RSG">RSG</div><span>RSG战队</span></td>
+                        <td>¥1,080万</td>
+                        <td style="color:var(--danger-color)">-4.3%</td>
+                        <td>77.5</td>
+                        <td><span class="status-dot warning"></span>预警</td>
+                      </tr>
+                      <tr>
+                        <td>18</td>
+                        <td class="club-cell"><div class="club-logo logo-ST">ST</div><span>ST战队</span></td>
+                        <td>¥1,020万</td>
+                        <td style="color:var(--danger-color)">-5.7%</td>
+                        <td>76.8</td>
+                        <td><span class="status-dot warning"></span>预警</td>
+                      </tr>
+                      <tr>
+                        <td>19</td>
+                        <td class="club-cell"><div class="club-logo logo-TEC">TEC</div><span>TEC战队</span></td>
+                        <td>¥980万</td>
+                        <td style="color:var(--danger-color)">-6.2%</td>
+                        <td>75.1</td>
+                        <td><span class="status-dot warning"></span>预警</td>
+                      </tr>
+                      <tr>
+                        <td>20</td>
+                        <td class="club-cell"><div class="club-logo logo-KONE">KONE</div><span>KONE战队</span></td>
+                        <td>¥920万</td>
+                        <td style="color:var(--danger-color)">-7.8%</td>
+                        <td>73.4</td>
+                        <td><span class="status-dot danger"></span>预警</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+    
+            <!-- 底部告警与提示 -->
+            <section class="alert-row">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fa-solid fa-triangle-exclamation"></i> 联盟健康度预警</h3>
+                  <div class="card-actions">
+                    <a class="tag" href="#" id="health-alert-view-all">查看全部</a>
+                  </div>
+                </div>
+                <div class="card-body alert-list">
+                  <div class="alert-item" data-status="预警"><span class="badge">财务风险</span> TEC俱乐部资金池增长放缓，需要关注</div>
+                  <div class="alert-item" data-status="注意"><span class="badge">运营效率</span> KSG俱乐部运营投入产出比下降，请关注效率</div>
+                  <div class="alert-item" data-status="预警"><span class="badge">粉丝流量</span> KONE俱乐部社媒粉丝增长率下降</div>
+                  <div class="alert-item" data-status="健康"><span class="badge">数据正常</span> TT俱乐部各项指标运行良好</div>
+                  <div class="alert-item" data-status="健康"><span class="badge">表现优秀</span> Tianba俱乐部商业价值持续增长</div>
+                  <div class="alert-item" data-status="注意"><span class="badge">关注趋势</span> AG俱乐部竞技表现需要持续关注</div>
+                  <div class="alert-item" data-status="预警"><span class="badge">风险提示</span> RSG俱乐部多项指标出现下滑</div>
+                  <div class="alert-item" data-status="健康"><span class="badge">稳定发展</span> WBG俱乐部整体运营状况良好</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fa-regular fa-handshake"></i> 联盟协议到期提示</h3>
+                  <div class="card-actions"><a class="tag" href="#" id="protocol-alert-view-all">查看全部</a></div>
+                </div>
+                <div class="card-body alert-list">
+                  <div class="alert-item"><span class="badge">合同到期</span> XX合同即将到期，需人员跟进</div>
+                  <div class="alert-item"><span class="badge">条款异常</span> XX合同条款与标准模板不一致</div>
+                  <div class="alert-item"><span class="badge">审批提醒</span> XX合同审批流转逾期，请尽快处理</div>
+                </div>
+              </div>
+            </section>
+    
+            <!-- 兼容：占位旧图表容器，避免下方脚本报错 -->
+            <div id="trendChart" class="legacy-hidden"></div>
+            <div id="distributionChart" class="legacy-hidden"></div>
+            <div id="competitiveChart" class="legacy-hidden"></div>
+          </div>
+    
+          <!-- 页面内样式：仅用于本页布局与交互 -->
+          <style>
+            .page-container { padding: 24px; max-width: 1600px; margin: 0 auto; }
+            .page-title { font-size: 28px; font-weight: 700; color: #fff; margin: 0 0 6px; }
+            .page-subtitle { color: var(--light-100); margin: 0 0 16px; }
+    
+            .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 16px; }
+            .stat-card { background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); padding: 16px; position: relative; transition: transform .2s ease, box-shadow .2s ease; }
+            .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+            .stat-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+            .stat-header .left { display:flex; align-items:center; gap:8px; color:#fff; font-weight:600; }
+            .stat-header .right { color:#C9CDD4; }
+            .stat-value { display:flex; align-items:baseline; gap:8px; }
+            .stat-value .num { font-size:24px; font-weight:700; color:#fff; }
+            .stat-value .unit { color:#C9CDD4; }
+            .stat-trend { position:absolute; right:12px; bottom:12px; font-size:12px; }
+            .trend-up { color: var(--success-color); }
+            .trend-down { color: var(--danger-color); }
+            .trend-stable { color: var(--light-100); }
+    
+            .charts-row { display:grid; grid-template-columns: 1.2fr 2fr 0.9fr; gap:16px; margin-bottom:16px; }
+            .card { background: var(--dark-100); border: 1px solid var(--dark-200); border-radius: var(--border-radius); }
+            .card-header { padding: 12px 16px; border-bottom: 1px solid var(--dark-200); display:flex; align-items:center; justify-content:space-between; }
+            .card-title { color:#fff; font-weight:600; display:flex; align-items:center; gap:8px; }
+            .card-body { padding: 12px 16px; }
+            .chart-box { height: 360px; }
+    
+            .tag-panel { display:flex; flex-direction:column; gap:8px; }
+            .tag-group-title { color:#C9CDD4; font-size:12px; margin-bottom:4px; }
+            .tag-list { display:flex; flex-wrap:wrap; gap:8px; }
+            .tag { padding:6px 10px; border-radius:6px; background:#2E333B; border:1px solid #4E5969; color:#fff; font-size:12px; cursor:pointer; transition:all .2s ease; }
+            .tag:hover { background:#3A3F47; border-color:#6B778C; transform:translateY(-1px); }
+            .tag.active { background: var(--primary-color); border-color: var(--primary-color); }
+            
+            .filter-select { 
+              background: #2E333B; 
+              border: 1px solid #4E5969; 
+              color: #fff; 
+              padding: 6px 10px; 
+              border-radius: 6px; 
+              font-size: 12px; 
+              cursor: pointer; 
+              transition: all .2s ease; 
+            }
+            .filter-select:hover { 
+              background: #3A3F47; 
+              border-color: #6B778C; 
+            }
+            .filter-select:focus { 
+              outline: none; 
+              border-color: var(--primary-color); 
+            }
+
+            /* 弹窗样式 */
+            .modal-overlay {
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 0, 0, 0.7);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              z-index: 1000;
+              animation: fadeIn 0.3s ease;
+            }
+
+            .modal-content {
+              background: #1e2029;
+              border-radius: 12px;
+              width: 90%;
+              max-width: 800px;
+              max-height: 80vh;
+              overflow: hidden;
+              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+              animation: slideIn 0.3s ease;
+            }
+
+            .modal-header {
+              background: #2a2d3a;
+              padding: 20px 24px;
+              border-bottom: 1px solid #3a3f4f;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+
+            .modal-header h3 {
+              margin: 0;
+              color: #ffffff;
+              font-size: 18px;
+              font-weight: 600;
+            }
+
+            .modal-header h3 i {
+              margin-right: 8px;
+              color: #4a90e2;
+            }
+
+            .modal-close {
+              background: none;
+              border: none;
+              color: #888;
+              font-size: 24px;
+              cursor: pointer;
+              padding: 0;
+              width: 30px;
+              height: 30px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: 50%;
+              transition: all 0.2s ease;
+            }
+
+            .modal-close:hover {
+              background: #3a3f4f;
+              color: #ffffff;
+            }
+
+            .modal-body {
+              padding: 24px;
+              max-height: 60vh;
+              overflow-y: auto;
+            }
+
+            .alert-item-modal {
+              background: #2a2d3a;
+              border: 1px solid #3a3f4f;
+              border-radius: 8px;
+              padding: 16px;
+              margin-bottom: 12px;
+              color: #ffffff;
+              line-height: 1.5;
+            }
+
+            .alert-item-modal:last-child {
+              margin-bottom: 0;
+            }
+
+            .alert-item-modal .badge {
+              background: #4a90e2;
+              color: #ffffff;
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 12px;
+              font-weight: 500;
+              margin-right: 8px;
+              display: inline-block;
+            }
+
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+
+            @keyframes slideIn {
+              from { 
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+              }
+              to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+              }
+            }
+
+            /* 滚动条样式 */
+            .modal-body::-webkit-scrollbar {
+              width: 6px;
+            }
+
+            .modal-body::-webkit-scrollbar-track {
+              background: #2a2d3a;
+              border-radius: 3px;
+            }
+
+            .modal-body::-webkit-scrollbar-thumb {
+              background: #4a90e2;
+              border-radius: 3px;
+            }
+
+            .modal-body::-webkit-scrollbar-thumb:hover {
+              background: #5ba0f2;
+            }
+    
+            .bottom-row { display:grid; grid-template-columns: 1fr 2fr; gap:16px; margin-bottom:16px; }
+            .news-list { display:flex; flex-direction:column; gap:8px; }
+            .news-item { background:#2E333B; border:1px solid #4E5969; border-radius:8px; padding:10px 12px; color:#fff; display:flex; align-items:center; justify-content:space-between; transition:background .2s ease, transform .2s ease; }
+            .news-item:hover { background:#3A3F47; transform:translateX(2px); }
+            .news-title { display:flex; align-items:center; gap:8px; color:#fff; }
+            .news-date { color:#C9CDD4; font-size:12px; }
+    
+            .table-wrap { overflow:auto; }
+            table { width:100%; border-collapse:collapse; }
+            thead th { text-align:left; color:#C9CDD4; font-weight:600; padding:10px 12px; border-bottom:1px solid var(--dark-200); }
+            tbody td { padding:10px 12px; border-bottom:1px solid var(--dark-200); color:#fff; }
+            tbody tr:hover { background:#2E333B; }
+            .club-cell { display:flex; align-items:center; gap:10px; }
+            .club-logo { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#fff; font-weight:700; }
+            .logo-TB { background:#165dff; } .logo-NV { background:#00d4aa; } .logo-TC { background:#ff6b35; } .logo-AG { background:#8a56ff; } .logo-RSG { background:#6b778c; }
+            .status-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+            .ok { background: var(--success-color); } .warn { background: var(--danger-color); } .mid { background: var(--primary-color); }
+    
+            .alert-row { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+            .alert-list { display:flex; flex-direction:column; gap:8px; }
+            .alert-item { background:#3a1f1f; border:1px solid #a84c4c; border-radius:8px; padding:10px 12px; color:#ffd9d9; display:flex; align-items:center; gap:8px; }
+            .alert-item .badge { background:#a84c4c; color:#fff; font-size:12px; padding:2px 6px; border-radius:4px; }
+    
+            .legacy-hidden { position:absolute; left:-10000px; top:-10000px; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none; }
+    
+            @media (max-width: 1200px) { .charts-row { grid-template-columns: 1fr; } .bottom-row { grid-template-columns: 1fr; } .stats-row { grid-template-columns: repeat(2,1fr); } }
+            @media (max-width: 768px) { .stats-row { grid-template-columns: 1fr; } }
+          </style>
+    
+          <!-- 页面内脚本：本页图表与交互 -->
+          <script>
+            // 雷达图
+            const radar = echarts.init(document.getElementById('ecoRadar'));
+            const radarOption = {
+              tooltip: { trigger: 'item', backgroundColor: 'rgba(0,0,0,.85)', borderColor: '#165dff', textStyle: { color:'#fff' } },
+              radar: {
+                indicator: [
+                  { name: '财务稳定性', max: 100 },
+                  { name: '赛事竞争力', max: 100 },
+                  { name: '运营能力', max: 100 },
+                  { name: '管理效能', max: 100 },
+                  { name: '品牌商业化', max: 100 }
+                ],
+                splitLine: { lineStyle: { color: '#333' } },
+                axisLine: { lineStyle: { color: '#444' } },
+                splitArea: { areaStyle: { color: ['rgba(22,93,255,.08)','rgba(22,93,255,.03)'] } }
+              },
+              series: [{
+                name: '本赛季', type: 'radar',
+                data: [{ value: [85, 92, 88, 80, 86], name: '本赛季' }],
+                areaStyle: { color: 'rgba(22,93,255,.25)' },
+                lineStyle: { width: 2, color: '#165dff' },
+                emphasis: { lineStyle: { width: 3 }, areaStyle: { opacity: .6 } }
+              }]
+            };
+            radar.setOption(radarOption);
+    
+            // 双系列柱图
+            const bar = echarts.init(document.getElementById('clubValueBar'));
+            const clubs = ['TT','Tianba','WBG','JDG','TC','STE','LGD','RW','AG','VS','TJB','NV','4AM','KSG','ACT','KBG','RSG','ST','TEC','KONE'];
+            const valueA = [1200,1180,1160,1140,1120,1100,1080,1060,1040,1020,1000,980,960,940,920,900,880,860,840,820];
+            const valueB = [1180,1160,1140,1120,1100,1080,1060,1040,1020,1000,980,960,940,920,900,880,860,840,820,800];
+            const barOption = {
+              tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(0,0,0,.85)', borderColor: '#165dff', textStyle: { color:'#fff' } },
+              legend: { data: ['商业价值','营业收入'], textStyle: { color:'#fff' } },
+              grid: { left: '3%', right: '3%', bottom: '3%', containLabel: true },
+              xAxis: { type: 'category', data: clubs, axisLine: { lineStyle: { color: '#333' } }, axisLabel: { color: '#C9CDD4' } },
+              yAxis: { type: 'value', axisLine: { lineStyle: { color: '#333' } }, axisLabel: { color: '#C9CDD4' }, splitLine: { lineStyle: { color: '#333' } } },
+              series: [
+                { name: '商业价值', type: 'bar', data: valueA, itemStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#4fc3f7'},{offset:1,color:'#0288d1'}]) }, emphasis: { focus: 'series' } },
+                { name: '营业收入', type: 'bar', data: valueB, itemStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#82e9a6'},{offset:1,color:'#00c853'}]) }, emphasis: { focus: 'series' } }
+              ]
+            };
+            bar.setOption(barOption);
+    
+
+
+            // 俱乐部状态筛选功能
+            document.getElementById('club-status-filter')?.addEventListener('change', (e) => {
+              const filterValue = e.target.value;
+              const tableRows = document.querySelectorAll('.card-body.table-wrap tbody tr');
+              
+              tableRows.forEach(row => {
+                const statusCell = row.querySelector('td:last-child');
+                if (!statusCell) return;
+                
+                const statusText = statusCell.textContent.trim();
+                let shouldShow = false;
+                
+                if (filterValue === '全部') {
+                  shouldShow = true;
+                } else {
+                  shouldShow = statusText.includes(filterValue);
+                }
+                
+                row.style.display = shouldShow ? '' : 'none';
+              });
+            });
+
+            // 模型健康度预警弹窗功能
+            document.getElementById('health-alert-view-all')?.addEventListener('click', (e) => {
+              e.preventDefault();
+              showHealthAlertModal();
+            });
+
+            // 模型协议监测提示弹窗功能
+            document.getElementById('protocol-alert-view-all')?.addEventListener('click', (e) => {
+              e.preventDefault();
+              showProtocolAlertModal();
+            });
+
+            // 显示健康度预警弹窗
+            function showHealthAlertModal() {
+              const modalContent = `
+                <div class="modal-overlay" id="health-alert-modal">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3><i class="fa-solid fa-triangle-exclamation"></i> 模型健康度预警详情</h3>
+                      <button class="modal-close" onclick="closeModal('health-alert-modal')">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="alert-item-modal"><span class="badge">财务风险</span> TEC俱乐部资金池增长放缓，需要关注财务状况和投资策略调整</div>
+                      <div class="alert-item-modal"><span class="badge">运营效率</span> KSG俱乐部运营投入产出比下降，请关注效率优化和成本控制</div>
+                      <div class="alert-item-modal"><span class="badge">粉丝流量</span> KONE俱乐部社媒粉丝增长率下降，建议加强内容营销和粉丝互动</div>
+                      <div class="alert-item-modal"><span class="badge">数据正常</span> TT俱乐部各项指标运行良好，保持当前发展策略</div>
+                      <div class="alert-item-modal"><span class="badge">表现优秀</span> Tianba俱乐部商业价值持续增长，可考虑扩大投资规模</div>
+                      <div class="alert-item-modal"><span class="badge">关注趋势</span> AG俱乐部竞技表现需要持续关注，建议优化训练计划</div>
+                      <div class="alert-item-modal"><span class="badge">风险提示</span> RSG俱乐部多项指标出现下滑，需要制定综合改进方案</div>
+                      <div class="alert-item-modal"><span class="badge">稳定发展</span> WBG俱乐部整体运营状况良好，继续保持稳健发展</div>
+                      <div class="alert-item-modal"><span class="badge">市场风险</span> 整体电竞市场竞争加剧，各俱乐部需要提升核心竞争力</div>
+                      <div class="alert-item-modal"><span class="badge">政策变化</span> 相关政策调整可能影响俱乐部运营，需要密切关注政策动向</div>
+                    </div>
+                  </div>
+                </div>
+              `;
+              document.body.insertAdjacentHTML('beforeend', modalContent);
+            }
+
+            // 显示协议监测提示弹窗
+            function showProtocolAlertModal() {
+              const modalContent = `
+                <div class="modal-overlay" id="protocol-alert-modal">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3><i class="fa-regular fa-handshake"></i> 模型协议监测提示详情</h3>
+                      <button class="modal-close" onclick="closeModal('protocol-alert-modal')">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="alert-item-modal"><span class="badge">合同到期</span> TT俱乐部赞助合同将于2025年6月到期，需人员跟进续约事宜</div>
+                      <div class="alert-item-modal"><span class="badge">条款异常</span> AG俱乐部转会合同条款与标准模板不一致，需要法务审核</div>
+                      <div class="alert-item-modal"><span class="badge">审批提醒</span> WBG俱乐部新签合同审批流转逾期3天，请尽快处理</div>
+                      <div class="alert-item-modal"><span class="badge">续约提醒</span> JDG俱乐部主力选手合同即将到期，建议提前启动续约谈判</div>
+                      <div class="alert-item-modal"><span class="badge">违约风险</span> KSG俱乐部存在潜在违约风险，需要加强合同执行监督</div>
+                      <div class="alert-item-modal"><span class="badge">条款更新</span> 联盟标准合同模板已更新，建议各俱乐部及时调整合同条款</div>
+                      <div class="alert-item-modal"><span class="badge">法务审核</span> RSG俱乐部多份合同待法务部门审核，请加快审核进度</div>
+                      <div class="alert-item-modal"><span class="badge">保险到期</span> STE俱乐部选手保险即将到期，需要及时续保</div>
+                    </div>
+                  </div>
+                </div>
+              `;
+              document.body.insertAdjacentHTML('beforeend', modalContent);
+            }
+
+            // 关闭弹窗
+            function closeModal(modalId) {
+              const modal = document.getElementById(modalId);
+              if (modal) {
+                modal.remove();
+              }
+            }
+
+            // 点击弹窗外部关闭
+            document.addEventListener('click', (e) => {
+              if (e.target.classList.contains('modal-overlay')) {
+                e.target.remove();
+              }
+            });
+
+            // 健康度预警筛选功能已移除，因为筛选标签已删除
+            // 原有的筛选逻辑不再需要
+
+            // 设置默认显示所有预警项目
+            document.addEventListener('DOMContentLoaded', () => {
+              const alertItems = document.querySelectorAll('.alert-row .card:first-child .alert-item');
+              alertItems.forEach(item => {
+                item.style.display = 'block';
+              });
+            });
+    
+            // 响应式
+            window.addEventListener('resize', () => { radar.resize(); bar.resize(); });
+          </script>
+</main>
+<script src="js/common.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,63 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f39c12;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e74c3c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="faceGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffeaa7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fdcb6e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="crownGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f1c40f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f39c12;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow2" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGradient2)" stroke="#fff" stroke-width="4" filter="url(#shadow2)"/>
+  
+  <!-- Face -->
+  <circle cx="60" cy="52" r="26" fill="url(#faceGradient2)"/>
+  
+  <!-- Crown -->
+  <path d="M 35 35 L 40 25 L 45 30 L 50 20 L 55 30 L 60 15 L 65 30 L 70 20 L 75 30 L 80 25 L 85 35 Z" fill="url(#crownGradient)" stroke="#e67e22" stroke-width="1"/>
+  
+  <!-- Crown Jewels -->
+  <circle cx="45" cy="28" r="2" fill="#e74c3c"/>
+  <circle cx="60" cy="22" r="3" fill="#9b59b6"/>
+  <circle cx="75" cy="28" r="2" fill="#3498db"/>
+  
+  <!-- Eyes -->
+  <circle cx="52" cy="47" r="3.5" fill="#2d3436"/>
+  <circle cx="68" cy="47" r="3.5" fill="#2d3436"/>
+  <circle cx="53" cy="46" r="1.5" fill="#fff"/>
+  <circle cx="69" cy="46" r="1.5" fill="#fff"/>
+  
+  <!-- Nose -->
+  <ellipse cx="60" cy="54" rx="2" ry="2.5" fill="#e17055"/>
+  
+  <!-- Mouth -->
+  <path d="M 54 60 Q 60 65 66 60" stroke="#2d3436" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Hair -->
+  <path d="M 38 42 Q 42 38 50 40 Q 55 38 60 40 Q 65 38 70 40 Q 78 38 82 42 Q 80 45 75 44 Q 70 42 60 43 Q 50 42 45 44 Q 40 45 38 42" fill="#8b4513"/>
+  
+  <!-- Body/Royal Robe -->
+  <ellipse cx="60" cy="88" rx="38" ry="28" fill="#9b59b6"/>
+  <rect x="22" y="75" width="76" height="35" fill="#9b59b6" rx="8"/>
+  
+  <!-- Royal Decorations -->
+  <rect x="50" y="80" width="20" height="25" fill="#f1c40f" rx="3"/>
+  <circle cx="60" cy="87" r="4" fill="#e74c3c"/>
+  
+  <!-- Gaming Elements -->
+  <polygon points="25,25 30,20 35,25 30,30" fill="#f1c40f" opacity="0.9"/>
+  <text x="30" y="28" text-anchor="middle" fill="#2d3436" font-size="8" font-weight="bold">K</text>
+  
+  <polygon points="85,95 90,90 95,95 90,100" fill="#f1c40f" opacity="0.9"/>
+  <text x="90" y="98" text-anchor="middle" fill="#2d3436" font-size="8" font-weight="bold">♔</text>
+</svg>

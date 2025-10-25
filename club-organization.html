@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俱乐部组织架构 - PEL联盟生态数据大屏</title>
+    
+    <!-- 外部资源 -->
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+    <script src="js/echarts.min.js"></script>
+    
+    <!-- 本地样式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        /* 页面容器样式 - 与club-overview.html保持一致 */
+        .club-overview-container {
+            padding: 24px;
+            background: #1D2129;
+            min-height: 100vh;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* 页面头部 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin: 0;
+        }
+        
+        .club-selector select {
+            background: #2E333B;
+            border: 1px solid #4E5969;
+            border-radius: 6px;
+            color: #FFFFFF;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        /* 核心指标卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #2E333B;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: #165DFF;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 18px;
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 2px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #C9CDD4;
+            margin-bottom: 2px;
+        }
+        
+        .stat-trend {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .stat-trend.positive { color: #32D74B; }
+        .stat-trend.stable { color: #C9CDD4; }
+        
+        .level-s {
+            color: #FF6B35;
+        }
+        
+        /* 俱乐部标签 */
+        .club-tags-section {
+            margin-bottom: 20px;
+        }
+        
+        .club-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .club-tag {
+            background: #165DFF;
+            color: #FFFFFF;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .club-tag.tag-healthy { background: #32D74B; }
+        .club-tag.tag-training { background: #FF6B35; }
+        .club-tag.tag-commercial { background: #FFD60A; color: #1D2129; }
+        .club-tag.tag-stable { background: #007AFF; }
+        .club-tag.tag-popular { background: #FF9500; }
+        
+        /* 卡片样式 */
+        .card {
+            background: #2E333B;
+            border: 1px solid #4E5969;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #4E5969;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin: 0;
+        }
+        
+        .card-title i {
+            color: #165DFF;
+            font-size: 16px;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn, .season-dropdown, .comparison-dropdown {
+            background: #4E5969;
+            border: none;
+            border-radius: 4px;
+            color: #FFFFFF;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .action-btn:hover {
+            background: #165DFF;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* 俱乐部信息网格 */
+        .club-info-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        
+        .club-logo-section {
+            text-align: center;
+        }
+        
+        .club-logo {
+            width: 80px;
+            height: 80px;
+            background: #4E5969;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #C9CDD4;
+        }
+        
+        .club-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin: 0;
+        }
+        
+        .club-description-content h4 {
+            color: #FFFFFF;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .club-description-content p {
+            color: #C9CDD4;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        /* 迷你统计 */
+        .club-stats-mini {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .mini-stat {
+            text-align: center;
+        }
+        
+        .mini-stat-value {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: #165DFF;
+            margin-bottom: 4px;
+        }
+        
+        .mini-stat-label {
+            font-size: 11px;
+            color: #C9CDD4;
+        }
+        
+        /* 图表容器 */
+        .chart-box {
+            height: 200px;
+            background: #4E5969;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #C9CDD4;
+            margin-bottom: 12px;
+        }
+        
+        .chart-box.large {
+            height: 300px;
+        }
+        
+        .chart-description {
+            font-size: 12px;
+            color: #C9CDD4;
+            line-height: 1.5;
+        }
+        
+        /* 切换按钮 */
+        .metric-toggles {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .toggle-btn {
+            background: #4E5969;
+            border: none;
+            border-radius: 4px;
+            color: #C9CDD4;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .toggle-btn.active {
+            background: #165DFF;
+            color: #FFFFFF;
+        }
+        
+        /* 全宽卡片 */
+        .card.full-width {
+            width: 100%;
+        }
+        
+        /* 对比分析卡片 */
+        .comparison-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .comparison-card {
+            background: #4E5969;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .comparison-header h4 {
+            color: #FFFFFF;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .comparison-header i {
+            color: #32D74B;
+        }
+        
+        .comparison-card.improvement .comparison-header i {
+            color: #FFD60A;
+        }
+        
+        .comparison-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .comparison-list li {
+            color: #C9CDD4;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            padding-left: 12px;
+            position: relative;
+        }
+        
+        .comparison-list li:before {
+            content: "•";
+            color: #165DFF;
+            position: absolute;
+            left: 0;
+        }
+        
+        /* 股权架构大模块样式 */
+         .equity-main-section {
+             margin-bottom: 24px;
+         }
+         
+         .equity-subsection {
+             margin-bottom: 32px;
+             padding: 24px;
+             background: #2E333B;
+             border-radius: 8px;
+             border: 1px solid #4E5969;
+         }
+         
+         .equity-subsection:last-child {
+             margin-bottom: 0;
+         }
+         
+         .subsection-title {
+             color: #FFFFFF;
+             font-size: 18px;
+             font-weight: 600;
+             margin-bottom: 20px;
+             padding-bottom: 8px;
+             border-bottom: 2px solid #165DFF;
+         }
+        
+        .equity-chart-container {
+             padding: 20px;
+             background: #2E333B;
+             border-radius: 8px;
+             position: relative;
+         }
+        
+        .equity-structure {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            min-height: 400px;
+        }
+        
+        .equity-level {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+            width: 100%;
+            position: relative;
+        }
+        
+        .equity-node {
+            background: #4A90E2;
+            border-radius: 8px;
+            padding: 16px 20px;
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+        
+        .equity-node.subsidiary {
+            background: #5CB3CC;
+            min-width: 150px;
+        }
+        
+        .equity-node.target-company {
+            background: #4A90E2;
+            min-width: 250px;
+        }
+        
+        .company-name {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        
+        .equity-percentage {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .company-capital {
+            color: white;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .equity-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .equity-legend {
+            display: flex;
+            gap: 24px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .legend-color.major {
+            background: #4A90E2;
+        }
+        
+        .legend-color.subsidiary {
+            background: #5CB3CC;
+        }
+        
+        .investor-info {
+             background: #2E333B;
+             border-radius: 8px;
+             padding: 24px;
+         }
+        
+        .detail-item {
+            margin-bottom: 16px;
+        }
+        
+        .detail-label {
+            color: #86909C;
+            font-size: 14px;
+        }
+        
+        .detail-value {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .detail-text {
+            color: #C9CDD4;
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: justify;
+        }
+        
+        .management-hierarchy {
+             background: #2E333B;
+             border-radius: 8px;
+             padding: 24px;
+         }
+        
+        .management-level {
+            margin-bottom: 32px;
+        }
+        
+        .management-level:last-child {
+            margin-bottom: 0;
+        }
+        
+        .top-level {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        
+        .management-node.ceo {
+            background: #4A90E2;
+            border-radius: 8px;
+            padding: 20px 40px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+        
+        .position-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .person-name {
+            color: white;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .middle-level {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        
+        .management-group {
+            background: #3A3A3A;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .group-title {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .group-subtitle {
+            color: #5CB3CC;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .group-members {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .member-item {
+            color: #C9CDD4;
+            font-size: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid #4A4A4A;
+        }
+        
+        .member-item:last-child {
+            border-bottom: none;
+        }
+        
+        .team-member-profile {
+             background: #2E333B;
+             border-radius: 8px;
+             padding: 24px;
+         }
+        
+        .member-header {
+            margin-bottom: 20px;
+        }
+        
+        .member-name {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .member-experience {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .experience-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .experience-period {
+            color: #C9CDD4;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .club-info-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .club-stats-mini {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .comparison-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .middle-level {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .players-grid {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 16px;
+            }
+            
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+            
+            .equity-level {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .middle-level {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .equity-node {
+                min-width: 180px;
+            }
+            
+            .players-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .player-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+            
+            .player-avatar {
+                align-self: center;
+            }
+            
+            .player-stats {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .player-tags {
+                justify-content: center;
+            }
+        }
+        
+        /* 选手名单模块样式 */
+        .players-roster-section {
+            margin-bottom: 32px;
+        }
+        
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .player-card {
+            background: #2E333B;
+            border: 1px solid #4E5969;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border-color: #5CB3CC;
+        }
+        
+        .player-avatar {
+            flex-shrink: 0;
+        }
+        
+        .player-avatar img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4E5969;
+        }
+        
+        .player-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .player-name {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .player-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .tag-captain {
+            background: #FF6B6B;
+            color: white;
+        }
+        
+        .tag-veteran {
+            background: #4ECDC4;
+            color: white;
+        }
+        
+        .tag-rookie {
+            background: #45B7D1;
+            color: white;
+        }
+        
+        .tag-strategist {
+            background: #96CEB4;
+            color: white;
+        }
+        
+        .tag-role {
+            background: #6C5CE7;
+            color: white;
+        }
+        
+        .player-description {
+            color: #C9CDD4;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+        
+        .stat-label {
+            color: #8B949E;
+            font-size: 13px;
+        }
+        
+        .stat-value {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .stat-value.highlight-blue {
+            color: #4A90E2;
+        }
+        
+        .stat-value.highlight-green {
+            color: #28A745;
+        }
+        
+        .stat-value.highlight-orange {
+            color: #FD7E14;
+        }
+        
+        .view-all-container {
+            text-align: center;
+            margin-top: 32px;
+        }
+        
+        .view-all-btn {
+            background: linear-gradient(135deg, #4A90E2, #5CB3CC);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .view-all-btn:hover {
+            background: linear-gradient(135deg, #357ABD, #4A9BB8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶栏导航 -->
+    <header class="top-nav"></header>
+
+    <!-- 侧边栏导航 -->
+    <aside class="sidebar"></aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="club-overview-container">
+            <div class="page-header">
+                <h1 class="page-title">AG俱乐部————个体评估</h1>
+                <div class="club-selector">
+                    <select id="clubSelect">
+                        <option value="ag">AG</option>
+                        <option value="tianba">Tianba</option>
+                        <option value="wbg">WBG</option>
+                        <option value="jdg">JDG</option>
+                        <option value="tc">TC</option>
+                        <option value="ste">STE</option>
+                        <option value="lgd">LGD</option>
+                        <option value="rw">RW</option>
+                        <option value="tt">TT</option>
+                        <option value="vs">VS</option>
+                        <option value="tjb">TJB</option>
+                        <option value="nv">NV</option>
+                        <option value="4am">4AM</option>
+                        <option value="ksg">KSG</option>
+                        <option value="act">ACT</option>
+                        <option value="kbg">KBG</option>
+                        <option value="rsg">RSG</option>
+                        <option value="st">ST</option>
+                        <option value="tec">TEC</option>
+                        <option value="kone">KONE</option>
+                    </select>
+                </div>
+            </div>
+
+        <!-- 俱乐部核心指标 -->
+        <section class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="clubScore">92.6</div>
+                    <div class="stat-label">综合得分</div>
+                    <div class="stat-trend positive">+2.3</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-ranking-star"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="clubRank">第1名</div>
+                    <div class="stat-label">健康度联盟排名</div>
+                    <div class="stat-trend stable">持平</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="clubValue">¥2,180万</div>
+                    <div class="stat-label">俱乐部价值</div>
+                    <div class="stat-trend positive">+15.2%</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value level-s" id="clubLevel">S</div>
+                    <div class="stat-label">俱乐部等级</div>
+                    <div class="stat-trend stable">S级</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 俱乐部标签 -->
+        <section class="club-tags-section">
+            <div class="club-tags">
+                <span class="club-tag tag-healthy">健康型</span>
+                <span class="club-tag tag-training">赛训能力S</span>
+                <span class="club-tag tag-commercial">商业价值S</span>
+                <span class="club-tag tag-stable">财务稳定S</span>
+            </div>
+        </section>
+
+        <!-- 俱乐部详细信息 -->
+        <section class="club-details-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-info-circle"></i>
+                        俱乐部详细信息
+                    </h3>
+
+                </div>
+                <div class="card-body">
+                    <div class="club-info-grid">
+                        <div class="club-logo-section">
+                            <div class="club-logo">
+                                <img src="images/ag-logo-new.svg" alt="AG俱乐部" id="clubLogo" style="display: none;">
+                                <i class="fas fa-building" style="font-size: 32px;"></i>
+                            </div>
+                            <h2 class="club-name" id="clubName">AG俱乐部</h2>
+                        </div>
+                        
+                        <div class="club-description-content">
+                            <h4>俱乐部简介</h4>
+                            <p>AG电子竞技俱乐部成立于2018年，是由上海龙珠电竞投资有限公司全资控股的电子竞技俱乐部。俱乐部专注于手游电竞，目前拥有多个项目的专业战队，包括《PUBG Mobile》、《王者荣耀》、《英雄联盟手游》等。</p>
+                        
+                        <p>自成立以来，AG俱乐部在各项赛事中表现优异，获得了众多荣誉。俱乐部秉承"专业、团结、拼搏"的理念，致力于培养优秀的电竞选手，为中国电竞事业的发展贡献力量。</p>
+                            
+                            <div class="club-stats-mini">
+                                <div class="mini-stat">
+                                    <span class="mini-stat-value">5+</span>
+                                    <span class="mini-stat-label">电竞项目</span>
+                                </div>
+                                <div class="mini-stat">
+                                    <span class="mini-stat-value">25+</span>
+                                    <span class="mini-stat-label">专业选手</span>
+                                </div>
+                                <div class="mini-stat">
+                                    <span class="mini-stat-value">500W+</span>
+                                    <span class="mini-stat-label">粉丝数量</span>
+                                </div>
+                                <div class="mini-stat">
+                                    <span class="mini-stat-value">3000W+</span>
+                                    <span class="mini-stat-label">商业价值估值</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 股权架构大模块 -->
+         <section class="equity-main-section">
+             <div class="card">
+                 <div class="card-header">
+                     <h3 class="card-title">
+                         <i class="fas fa-sitemap"></i>
+                         股权架构
+                     </h3>
+                 </div>
+                 <div class="card-body">
+                     <!-- 股权架构图 -->
+                     <div class="equity-subsection">
+                         <h4 class="subsection-title">股权架构图</h4>
+                        <div class="equity-chart-container">
+                            <!-- 股权架构图 -->
+                            <div class="equity-structure">
+                                <!-- 主要股东 -->
+                                <div class="equity-level level-1">
+                                    <div class="equity-node major-shareholder">
+                                        <div class="node-content">
+                                            <div class="company-name">深圳市江月知梦文化娱乐发展有限公司</div>
+                                            <div class="equity-percentage">65%</div>
+                                        </div>
+                                    </div>
+                                    <div class="equity-node major-shareholder">
+                                        <div class="node-content">
+                                            <div class="company-name">安徽省力捷网络科技有限公司</div>
+                                            <div class="equity-percentage">20%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 连接线 -->
+                                <div class="connection-lines">
+                                    <svg class="equity-svg" viewBox="0 0 800 200">
+                                        <!-- 主要股东到子公司的连接线 -->
+                                        <line x1="200" y1="80" x2="200" y2="120" stroke="#4E5969" stroke-width="2"/>
+                                        <line x1="600" y1="80" x2="600" y2="120" stroke="#4E5969" stroke-width="2"/>
+                                        <line x1="200" y1="120" x2="600" y2="120" stroke="#4E5969" stroke-width="2"/>
+                                        <line x1="400" y1="120" x2="400" y2="160" stroke="#4E5969" stroke-width="2"/>
+                                    </svg>
+                                </div>
+                                
+                                <!-- 子公司层级 -->
+                                <div class="equity-level level-2">
+                                    <div class="equity-node subsidiary">
+                                        <div class="node-content">
+                                            <div class="company-name">高管持股平台</div>
+                                            <div class="equity-percentage">5%</div>
+                                        </div>
+                                    </div>
+                                    <div class="equity-node subsidiary">
+                                        <div class="node-content">
+                                            <div class="company-name">腾讯游戏</div>
+                                            <div class="equity-percentage">5%</div>
+                                        </div>
+                                    </div>
+                                    <div class="equity-node subsidiary">
+                                        <div class="node-content">
+                                            <div class="company-name">网易电竞</div>
+                                            <div class="equity-percentage">5%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 目标公司 -->
+                                <div class="equity-level level-3">
+                                    <div class="equity-node target-company">
+                                        <div class="node-content">
+                                            <div class="company-name">AG电子竞技俱乐部</div>
+                                            <div class="company-capital">注册资本: 1000万元</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 图例 -->
+                            <div class="equity-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color major"></div>
+                                    <span>主要股东</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color subsidiary"></div>
+                                    <span>战略股东</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 资方概况 -->
+                     <div class="equity-subsection">
+                         <h4 class="subsection-title">资方概况</h4>
+                        <div class="investor-info">
+                            <div class="investor-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">公司名称：</span>
+                                    <span class="detail-value">深圳市江月知梦文化娱乐发展有限公司</span>
+                                </div>
+                                <div class="detail-text">
+                                    安徽省力捷网络科技有限公司，成立于2015年，注册资本5000万元，是一家以互联网技术研发为主的企业。企业主营业务1265.1822万人民币，实缴资本399.9412万人民币，并且于2018年完成了A+轮。通过天眼查大数据分析，安徽省力捷网络科技有限公司对外投资了748家企业，参与招投标项目4次，知识产权方面有商标信息204条，专利信息3条，著作权信息97条。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 管理层架构 -->
+                     <div class="equity-subsection">
+                         <h4 class="subsection-title">管理层架构</h4>
+                        <!-- 高层管理 -->
+                        <div class="management-hierarchy">
+                            <div class="management-level top-level">
+                                <div class="management-node ceo">
+                                    <div class="position-title">高层管理总经理</div>
+                                    <div class="person-name">王卓</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 中层管理 -->
+                            <div class="management-level middle-level">
+                                <div class="management-group">
+                                    <div class="group-title">品牌及运营负责人</div>
+                                    <div class="group-subtitle">蔡子娟</div>
+                                    <div class="group-members">
+                                        <div class="member-item">品牌推广运营经理</div>
+                                        <div class="member-item">粉丝社群运营经理</div>
+                                        <div class="member-item">营销策划经理</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="management-group">
+                                    <div class="group-title">内容组负责人</div>
+                                    <div class="group-subtitle">魏一丹</div>
+                                    <div class="group-members">
+                                        <div class="member-item">赛事内容运营团队</div>
+                                        <div class="member-item">制作视频运营团队</div>
+                                        <div class="member-item">直播平台运营团队</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="management-group">
+                                    <div class="group-title">直播及商务负责人</div>
+                                    <div class="group-subtitle">廖卓林</div>
+                                    <div class="group-members">
+                                        <div class="member-item">赛事直播平台合作</div>
+                                        <div class="member-item">品牌商务拓展团队</div>
+                                        <div class="member-item">开发商业化项目</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="management-group">
+                                    <div class="group-title">赛训经理</div>
+                                    <div class="group-subtitle">张译心</div>
+                                    <div class="group-members">
+                                        <div class="member-item">竞技赛训团队</div>
+                                        <div class="member-item">数据分析团队</div>
+                                        <div class="member-item">合规管理团队</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 管理团队详细介绍 -->
+                     <div class="equity-subsection">
+                         <h4 class="subsection-title">管理团队详细介绍</h4>
+                        <div class="team-member-profile">
+                            <div class="member-header">
+                                <div class="member-name">王卓 - 高层管理总经理</div>
+                            </div>
+                            <div class="member-experience">
+                                <div class="experience-item">
+                                    <div class="experience-period">• 2015-2017年 JQK 俱乐部总经理</div>
+                                </div>
+                                <div class="experience-item">
+                                    <div class="experience-period">• 2018-2021年 明星电竞赛事经理</div>
+                                </div>
+                                <div class="experience-item">
+                                    <div class="experience-period">• 前腾 Next 系列赛事 pm，两届明杯冠军，多次国际赛事，深耕行业多年，具备丰富的赛事运营经验</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 选手名单模块 -->
+        <section class="players-roster-section">
+            <div class="card">
+                <h3 class="section-title">选手名单</h3>
+                <div class="players-grid">
+                    <!-- 选手卡片 1 -->
+                    <div class="player-card">
+                        <div class="player-avatar">
+                            <img src="images/player-king-new.svg" alt="King">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">King</div>
+                            <div class="player-tags">
+                                <span class="tag tag-captain">主播</span>
+                                <span class="tag tag-role">合约选手(核心1号)</span>
+                            </div>
+                            <div class="player-description">
+                                广州TTG俱乐部核心选手，擅长各类英雄的大招连招，是队伍的核心输出点，曾多次在关键比赛中发挥出色，带领队伍取得胜利。
+                            </div>
+                            <div class="player-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">参赛场次</span>
+                                    <span class="stat-value">128场</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均KD</span>
+                                    <span class="stat-value highlight-blue">1.89</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均伤害</span>
+                                    <span class="stat-value highlight-green">412</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 选手卡片 2 -->
+                    <div class="player-card">
+                        <div class="player-avatar">
+                            <img src="images/player-ajie.jpg" alt="阿杰">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">阿杰</div>
+                            <div class="player-tags">
+                                <span class="tag tag-veteran">主播</span>
+                                <span class="tag tag-role">合约选手(核心1号)</span>
+                            </div>
+                            <div class="player-description">
+                                广州TTG俱乐部主力选手之一，以精准的操作和冷静的判断著称，擅长在关键时刻挺身而出，是队伍不可或缺的中坚力量。
+                            </div>
+                            <div class="player-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">参赛场次</span>
+                                    <span class="stat-value">116场</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均KD</span>
+                                    <span class="stat-value highlight-blue">2.15</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均伤害</span>
+                                    <span class="stat-value highlight-green">416</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 选手卡片 3 -->
+                    <div class="player-card">
+                        <div class="player-avatar">
+                            <img src="images/player-paidaxing-new.svg" alt="派大星">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">派大星</div>
+                            <div class="player-tags">
+                                <span class="tag tag-rookie">新秀</span>
+                                <span class="tag tag-role">合约选手(核心1号)</span>
+                            </div>
+                            <div class="player-description">
+                                广州TTG俱乐部新晋选手，具备出色的游戏天赋和学习能力，虽然经验尚浅，但在训练中表现出色，是队伍未来的希望之星。
+                            </div>
+                            <div class="player-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">参赛场次</span>
+                                    <span class="stat-value">122场</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均KD</span>
+                                    <span class="stat-value highlight-blue">1.78</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均伤害</span>
+                                    <span class="stat-value highlight-green">308</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 选手卡片 4 -->
+                    <div class="player-card">
+                        <div class="player-avatar">
+                            <img src="images/player-tianyu-new.svg" alt="天宇">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">天宇</div>
+                            <div class="player-tags">
+                                <span class="tag tag-veteran">老将</span>
+                                <span class="tag tag-role">合约选手(核心2号)</span>
+                            </div>
+                            <div class="player-description">
+                                广州TTG俱乐部资深选手，擅长多个位置的英雄操作，具有丰富的比赛经验和出色的团队配合能力，是队伍战术体系的重要组成部分。
+                            </div>
+                            <div class="player-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">参赛场次</span>
+                                    <span class="stat-value">118场</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均KD</span>
+                                    <span class="stat-value highlight-blue">1.92</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均伤害</span>
+                                    <span class="stat-value highlight-green">372</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 选手卡片 5 -->
+                    <div class="player-card">
+                        <div class="player-avatar">
+                            <img src="images/player-silu-new.svg" alt="思路">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">思路</div>
+                            <div class="player-tags">
+                                <span class="tag tag-commander">指挥</span>
+                                <span class="tag tag-role">合约选手(核心1号)</span>
+                            </div>
+                            <div class="player-description">
+                                广州TTG俱乐部战术指挥，以出色的大局观和战术理解著称，能够在比赛中做出正确的决策，带领队伍走向胜利，是队伍的智囊团。
+                            </div>
+                            <div class="player-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">参赛场次</span>
+                                    <span class="stat-value">86场</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均KD</span>
+                                    <span class="stat-value highlight-blue">1.62</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均伤害</span>
+                                    <span class="stat-value highlight-green">348</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 选手卡片 6 -->
+                    <div class="player-card">
+                        <div class="player-avatar">
+                            <img src="images/player-xiaolong.jpg" alt="小龙">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">小龙</div>
+                            <div class="player-tags">
+                                <span class="tag tag-rookie">新秀</span>
+                                <span class="tag tag-role">合约选手(替补号)</span>
+                            </div>
+                            <div class="player-description">
+                                广州TTG俱乐部替补选手之一，虽然上场机会不多但训练刻苦，具备良好的基本功和团队意识，随时准备为队伍贡献力量，是队伍的有力补充。
+                            </div>
+                            <div class="player-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">参赛场次</span>
+                                    <span class="stat-value">74场</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均KD</span>
+                                    <span class="stat-value highlight-blue">1.58</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">场均伤害</span>
+                                    <span class="stat-value highlight-green">456</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+            </div>
+        </section>
+        </div> <!-- 关闭 club-overview-container -->
+    </main>
+
+    <!-- 加载通用脚本 -->
+    <script src="js/common.js"></script>
+    <script src="js/echarts-loader.js"></script>
+</body>
+</html>
+
