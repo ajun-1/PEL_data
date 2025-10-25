@@ -154,7 +154,7 @@ PEL/
 
 如有问题或建议，请通过以下方式联系：
 
-- 📧 Email: your.email@example.com
+- 📧 Email: alijun0101@Gmail.com
 - 🐛 Issues: [GitHub Issues](https://github.com/yourusername/PEL_data/issues)
 
 ---
