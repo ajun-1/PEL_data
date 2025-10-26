@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俱乐部数据看板 - PEL联盟生态数据大屏</title>
+    
+    <!-- 外部资源 -->
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="vendor/fontawesome/6.5.2/css/v4-shims.min.css">
+    <script src="js/echarts.min.js"></script>
+    
+    <!-- 本地样式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        /* 页面容器样式 - 与其他页面保持一致 */
+        .club-overview-container {
+            padding: 24px;
+            background: #1D2129;
+            min-height: 100vh;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .overview-dashboard { color: #FFFFFF; }
+        .overview-header { margin-bottom: 16px; }
+        .overview-title { font-size: 28px; font-weight: 700; margin: 0 0 6px; }
+        .overview-subtitle { color: #C9CDD4; margin: 0 0 16px; }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 16px; }
+        .kpi-card { background: #2E333B; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .kpi-value { font-size: 24px; font-weight: 700; }
+        .kpi-label { color: #C9CDD4; font-size: 12px; margin-top: 4px; }
+        .kpi-trend { margin-top: 8px; font-size: 12px; color: #9AA4B2; }
+        .kpi-up { color: #00D4AA; } .kpi-down { color: #FF6B35; } .kpi-flat { color: #FFD60A; }
+
+        .sub-kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+        .sub-kpi-card { background: #1E2329; border-radius: 10px; padding: 16px; text-align: center; }
+        .sub-kpi-value { font-size: 20px; font-weight: 700; }
+        .sub-kpi-label { font-size: 12px; color: #C9CDD4; }
+
+        .panel { background: #2E333B; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .panel-title { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+        .chart { height: 280px; }
+        .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        .chart-actions { margin-top: 8px; display: flex; gap: 8px; }
+        .btn-sm { background: #1E2329; border: 1px solid #4E5969; border-radius: 6px; padding: 6px 10px; color: #FFFFFF; cursor: pointer; }
+        .btn-sm:hover { border-color: #FF6B35; }
+
+        .insight-panel .insight-text { color: #C9CDD4; font-size: 12px; line-height: 1.6; }
+
+        .table-panel { margin-top: 16px; }
+        .table-header { display: flex; align-items: center; justify-content: space-between; }
+        .search-input { background: #1E2329; border: 1px solid #4E5969; color: #FFFFFF; padding: 8px 12px; border-radius: 6px; }
+
+        .club-table { width: 100%; border-collapse: collapse; }
+        .club-table thead th { text-align: left; font-weight: 600; color: #C9CDD4; padding: 10px 12px; border-bottom: 1px solid #4E5969; cursor: pointer; }
+        .club-table tbody td { padding: 10px 12px; border-bottom: 1px solid #4E5969; }
+
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; display: inline-block; }
+        .status-good { background: #193a2c; color: #00D4AA; }
+        .status-normal { background: #2c3340; color: #FFD60A; }
+        .status-warning { background: #3a2c2c; color: #FF6B35; }
+        .status-danger { background: #3a1f1f; color: #ff4d4f; }
+
+        .table-footer { margin-top: 8px; display: flex; justify-content: flex-end; }
+        .pagination { display: flex; gap: 8px; }
+        .pagination .page { background: #1E2329; border: 1px solid #4E5969; color: #FFFFFF; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+        .pagination .page.active { border-color: #FF6B35; color: #FF6B35; }
+
+        @media (max-width: 992px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } .charts-row { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } .sub-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航：由 common.js 动态生成 -->
+    <header class="top-nav"></header>
+
+    <!-- 侧边栏导航 -->
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">主菜单</div>
+                <div class="sidebar-menu">
+                    <a href="login.html" class="sidebar-item">
+                        <i class="fa fa-sign-in"></i>
+                        <span>登录</span>
+                    </a>
+                    <a href="alliance-overview.html" class="sidebar-item">
+                        <i class="fa fa-globe"></i>
+                        <span>联盟生态大盘</span>
+                    </a>
+                    <a href="alliance-dimension-overview.html" class="sidebar-item">
+                        <i class="fa fa-bar-chart"></i>
+                        <span>联盟维度数据概览</span>
+                    </a>
+                    <a href="alliance-dimension-indicators.html" class="sidebar-item">
+                        <i class="fa fa-line-chart"></i>
+                        <span>联盟维度细分指标</span>
+                    </a>
+                    <a href="club-overview.html" class="sidebar-item">
+                        <i class="fa fa-building"></i>
+                        <span>俱乐部总览</span>
+                    </a>
+                    <a href="club-organization.html" class="sidebar-item">
+                        <i class="fa fa-sitemap"></i>
+                        <span>俱乐部组织架构</span>
+                    </a>
+                    <a href="club-dashboard.html" class="sidebar-item active">
+                        <i class="fa fa-dashboard"></i>
+                        <span>俱乐部数据看板</span>
+                    </a>
+                    <a href="club-indicators.html" class="sidebar-item">
+                        <i class="fa fa-pie-chart"></i>
+                        <span>俱乐部细分指标</span>
+                    </a>
+                    <a href="player-overview.html" class="sidebar-item">
+                        <i class="fa fa-users"></i>
+                        <span>选手大盘数据</span>
+                    </a>
+                    <a href="player-trading.html" class="sidebar-item">
+                        <i class="fa fa-exchange"></i>
+                        <span>选手交易</span>
+                    </a>
+                    <a href="player-profile.html" class="sidebar-item">
+                        <i class="fa fa-user"></i>
+                        <span>选手个人履历</span>
+                    </a>
+                    <a href="player-traffic.html" class="sidebar-item">
+                        <i class="fa fa-signal"></i>
+                        <span>选手流量数据</span>
+                    </a>
+                    <a href="match-data.html" class="sidebar-item">
+                        <i class="fa fa-gamepad"></i>
+                        <span>赛事数据</span>
+                    </a>
+                    <a href="data-import.html" class="sidebar-item">
+                        <i class="fa fa-upload"></i>
+                        <span>数据导入</span>
+                    </a>
+                    <a href="import-log.html" class="sidebar-item">
+                        <i class="fa fa-list-alt"></i>
+                        <span>导入日志</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="club-overview-container">
+            <!-- 页面头部 -->
+            <div class="page-header">
+            <div class="header-left">
+                <h1 class="page-title">俱乐部个体评估</h1>
+                <p class="page-subtitle">深入分析单个俱乐部的各项指标与竞争优势表现</p>
+            </div>
+            <div class="header-right">
+                <div class="club-selector">
+                    <label>切换俱乐部</label>
+                    <select id="clubSelect" class="club-dropdown">
+                        <option value="AG">AG</option>
+                        <option value="Tianba">Tianba</option>
+                        <option value="WBG">WBG</option>
+                        <option value="JDG">JDG</option>
+                        <option value="TC">TC</option>
+                        <option value="STE">STE</option>
+                        <option value="LGD">LGD</option>
+                        <option value="RW">RW</option>
+                        <option value="TT">TT</option>
+                        <option value="VS">VS</option>
+                        <option value="TJB">TJB</option>
+                        <option value="NV">NV</option>
+                        <option value="4AM">4AM</option>
+                        <option value="KSG">KSG</option>
+                        <option value="ACT">ACT</option>
+                        <option value="KBG">KBG</option>
+                        <option value="RSG">RSG</option>
+                        <option value="ST">ST</option>
+                        <option value="TEC">TEC</option>
+                        <option value="KONE">KONE</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 俱乐部信息卡片 -->
+        <div class="club-info-card">
+            <div class="club-left-section">
+                <div class="club-avatar">
+                    <div class="avatar-circle">
+                        <span class="avatar-text">头像</span>
+                    </div>
+                </div>
+                <div class="club-basic-info">
+                    <h2 class="club-name">AG俱乐部</h2>
+                </div>
+            </div>
+            
+            <div class="club-main-metrics">
+                <div class="main-score">
+                    <div class="score-value">92.6</div>
+                    <div class="score-label">综合健康度</div>
+                </div>
+                <div class="rank-info">
+                    <div class="rank-value">第1名</div>
+                    <div class="rank-label">联盟排名</div>
+                </div>
+                <div class="revenue-info">
+                    <div class="revenue-value">¥2,180万</div>
+                    <div class="revenue-label">营收规模</div>
+                </div>
+                <div class="status-indicators-group">
+                    <div class="status-indicators">
+                        <div class="status-item-wrapper">
+                            <span class="status-item">S</span>
+                            <span class="status-label">竞技实力</span>
+                        </div>
+                        <div class="status-item-wrapper">
+                            <span class="status-item">S</span>
+                            <span class="status-label">运营能力</span>
+                        </div>
+                        <div class="status-item-wrapper">
+                            <span class="status-item">S</span>
+                            <span class="status-label">商业价值</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="club-type-badge">
+                    良好型
+                </div>
+            </div>
+            
+            <div class="club-right-stats">
+                <div class="stat-group blue-bg">
+                    <div class="stat-icon">
+                        <span>👥</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">总选手数</div>
+                        <div class="stat-trend positive">+16.7%较去年</div>
+                    </div>
+                </div>
+                <div class="stat-group green-bg">
+                    <div class="stat-icon">
+                        <span>🏟️</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">17</div>
+                        <div class="stat-label">赛训总人数</div>
+                        <div class="stat-trend positive">+10.1%较去年</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI指标卡片 -->
+        <div class="kpi-cards">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon trend-up"></div>
+                    <div class="kpi-trend positive">+2.1%</div>
+                </div>
+                <div class="kpi-value">82.5</div>
+                <div class="kpi-label">AG俱乐部财务健康度</div>
+                <div class="kpi-sublabel">较上季度</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon trophy"></div>
+                    <div class="kpi-trend positive">+1.2%</div>
+                </div>
+                <div class="kpi-value">85.8</div>
+                <div class="kpi-label">AG俱乐部赛事竞争力</div>
+                <div class="kpi-sublabel">较上季度</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon eye"></div>
+                    <div class="kpi-trend negative">-1.5%</div>
+                </div>
+                <div class="kpi-value">80.3</div>
+                <div class="kpi-label">AG俱乐部运营能力</div>
+                <div class="kpi-sublabel">较上季度</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon trophy"></div>
+                    <div class="kpi-trend positive">+1.2%</div>
+                </div>
+                <div class="kpi-value">85.8</div>
+                <div class="kpi-label">AG俱乐部品牌竞争力</div>
+                <div class="kpi-sublabel">较上季度</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon settings"></div>
+                    <div class="kpi-trend negative">-1.3%</div>
+                </div>
+                <div class="kpi-value">80.3</div>
+                <div class="kpi-label">AG俱乐部运营竞争力</div>
+                <div class="kpi-sublabel">较上季度</div>
+            </div>
+        </div>
+
+        <!-- 雷达图对比分析 -->
+        <div class="analysis-section">
+            <div class="radar-analysis">
+                <div class="section-header">
+                    <h3>雷达对比分析</h3>
+                    <div class="chart-controls">
+                        <button class="control-btn active" data-type="league">联盟平均</button>
+                        <button class="control-btn active" data-type="club">俱乐部数据</button>
+                        <select class="season-dropdown">
+                            <option>当前赛季</option>
+                            <option>前1个赛季</option>
+                            <option>前2个赛季</option>
+                            <option>前3个赛季</option>
+                            <option>前4个赛季</option>
+                            <option>前5个赛季</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="radar-container">
+                    <div id="radarChart" class="chart-container"></div>
+                </div>
+            </div>
+
+            <!-- 右侧进度条指标 -->
+            <div class="progress-indicators">
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">财务稳定性 (30%)</span>
+                        <span class="progress-value">94.2/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 94.2%" data-value="94.2"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">竞争实力 (25%)</span>
+                        <span class="progress-value">95.8/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 95.8%" data-value="95.8"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">运营能力</span>
+                        <span class="progress-value">90.4/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90.4%" data-value="90.4"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">品牌商业价值</span>
+                        <span class="progress-value">91.5/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 91.5%" data-value="91.5"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">管理效能</span>
+                        <span class="progress-value">89.7/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 89.7%" data-value="89.7"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 核心数据指标 -->
+        <div class="stats-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    核心数据指标
+                </h2>
+                <div class="section-actions">
+                    <select class="season-dropdown">
+                        <option value="current">当前赛季</option>
+                        <option value="previous1">前1个赛季</option>
+                        <option value="previous2">前2个赛季</option>
+                        <option value="previous3">前3个赛季</option>
+                        <option value="previous4">前4个赛季</option>
+                        <option value="previous5">前5个赛季</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">92.8</div>
+                        <div class="stat-label">综合竞技实力</div>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +2.3%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">活跃选手数量</div>
+                        <div class="stat-trend stable">
+                            <i class="fas fa-minus"></i>
+                            0%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">¥2.8M</div>
+                        <div class="stat-label">赛季总收入</div>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +15.7%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card info">
+                    <div class="stat-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">赛季胜场数</div>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +3场
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card danger">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">22.5%</div>
+                        <div class="stat-label">吃鸡率</div>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +5.2%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card secondary">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">4.8</div>
+                        <div class="stat-label">粉丝满意度</div>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +0.3
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </main>
+
+    <script>
+        // 俱乐部个体评估页面JavaScript
+        document.addEventListener('DOMContentLoaded', function () {
+            // 初始化雷达图
+            initRadarChart();
+            
+            // 初始化进度条动画
+            initProgressBars();
+            
+            // 初始化交互功能
+            initInteractions();
+        });
+
+        // 雷达图初始化
+        function initRadarChart() {
+            const radarDom = document.getElementById('radarChart');
+            if (!radarDom) { return; }
+            const radar = echarts.init(radarDom);
+            
+            let showLeague = true;
+            let showClub = true;
+            
+            const radarOption = {
+                tooltip: { 
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#165DFF',
+                    textStyle: { color: '#fff' }
+                },
+                legend: { 
+                    data: ['联盟平均', '俱乐部数据'],
+                    textStyle: { color: '#C9CDD4' },
+                    bottom: 10
+                },
+                radar: {
+                    indicator: [
+                        { name: '财务稳定性', max: 100 },
+                        { name: '竞争实力', max: 100 },
+                        { name: '运营能力', max: 100 },
+                        { name: '品牌商业价值', max: 100 },
+                        { name: '管理效能', max: 100 }
+                    ],
+                    splitNumber: 4,
+                    axisName: { 
+                        color: '#C9CDD4',
+                        fontSize: 12
+                    },
+                    splitLine: { 
+                        lineStyle: { color: '#4E5969' } 
+                    },
+                    splitArea: { 
+                        areaStyle: { color: ['transparent'] } 
+                    },
+                    axisLine: {
+                        lineStyle: { color: '#4E5969' }
+                    }
+                },
+                series: [
+                    {
+                        name: '联盟平均',
+                        type: 'radar',
+                        areaStyle: { 
+                            color: 'rgba(0, 212, 170, 0.15)',
+                            opacity: showLeague ? 0.15 : 0
+                        },
+                        lineStyle: { 
+                            color: '#00D4AA',
+                            width: 2,
+                            opacity: showLeague ? 1 : 0
+                        },
+                        itemStyle: {
+                            color: '#00D4AA',
+                            opacity: showLeague ? 1 : 0
+                        },
+                        data: [[80, 85, 82, 79, 81]]
+                    },
+                    {
+                        name: '俱乐部数据',
+                        type: 'radar',
+                        areaStyle: { 
+                            color: 'rgba(22, 93, 255, 0.15)',
+                            opacity: showClub ? 0.15 : 0
+                        },
+                        lineStyle: { 
+                            color: '#165DFF',
+                            width: 2,
+                            opacity: showClub ? 1 : 0
+                        },
+                        itemStyle: {
+                            color: '#165DFF',
+                            opacity: showClub ? 1 : 0
+                        },
+                        data: [[94.2, 95.8, 90.4, 91.5, 89.7]]
+                    }
+                ]
+            };
+            
+            radar.setOption(radarOption);
+            
+            // 控制按钮事件
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    this.classList.toggle('active');
+                    
+                    if (type === 'league') {
+                        showLeague = !showLeague;
+                        radarOption.series[0].areaStyle.opacity = showLeague ? 0.15 : 0;
+                        radarOption.series[0].lineStyle.opacity = showLeague ? 1 : 0;
+                        radarOption.series[0].itemStyle.opacity = showLeague ? 1 : 0;
+                    } else if (type === 'club') {
+                        showClub = !showClub;
+                        radarOption.series[1].areaStyle.opacity = showClub ? 0.15 : 0;
+                        radarOption.series[1].lineStyle.opacity = showClub ? 1 : 0;
+                        radarOption.series[1].itemStyle.opacity = showClub ? 1 : 0;
+                    }
+                    
+                    radar.setOption(radarOption);
+                });
+            });
+            
+            // 时间选择器事件
+            const timeSelectors = document.querySelectorAll('.time-selector');
+            timeSelectors.forEach(selector => {
+                selector.addEventListener('change', function() {
+                    // 模拟数据切换
+                    const newData = generateRandomData();
+                    radarOption.series[0].data = [newData.league];
+                    radarOption.series[1].data = [newData.club];
+                    radar.setOption(radarOption);
+                });
+            });
+            
+            // 窗口大小调整
+            window.addEventListener('resize', function() {
+                if (radar) radar.resize();
+            });
+        }
+
+        // 进度条动画初始化
+        function initProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            
+            // 延迟启动动画，创建更好的视觉效果
+            setTimeout(() => {
+                progressBars.forEach((bar, index) => {
+                    const value = bar.dataset.value;
+                    setTimeout(() => {
+                        bar.style.width = value + '%';
+                    }, index * 200);
+                });
+            }, 500);
+        }
+
+        // 交互功能初始化
+        function initInteractions() {
+            // 俱乐部选择器
+            const clubSelect = document.getElementById('clubSelect');
+            if (clubSelect) {
+                clubSelect.addEventListener('change', function() {
+                    const selectedClub = this.value;
+                    updateClubData(selectedClub);
+                });
+            }
+            
+            // KPI卡片悬停效果
+            document.querySelectorAll('.kpi-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // 进度条悬停效果
+            document.querySelectorAll('.progress-item').forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    const progressFill = this.querySelector('.progress-fill');
+                    progressFill.style.boxShadow = '0 0 10px rgba(0, 212, 170, 0.5)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    const progressFill = this.querySelector('.progress-fill');
+                    progressFill.style.boxShadow = 'none';
+                });
+            });
+        }
+
+        // 更新俱乐部数据
+        function updateClubData(clubName) {
+            // 模拟不同俱乐部的数据
+            const clubData = {
+                'AG': {
+                    name: 'AG俱乐部',
+                    score: 92.6,
+                    rank: '第1名',
+                    revenue: '¥2,180万',
+                    players: 6,
+                    venues: 17,
+                    kpis: [82.5, 85.8, 80.3, 85.8, 80.3],
+                    progress: [94.2, 95.8, 90.4, 91.5, 89.7]
+                },
+                'NV-XQF': {
+                    name: 'NV-XQF俱乐部',
+                    score: 90.8,
+                    rank: '第2名',
+                    revenue: '¥1,950万',
+                    players: 5,
+                    venues: 15,
+                    kpis: [80.2, 83.5, 78.1, 82.3, 77.8],
+                    progress: [91.5, 94.2, 86.8, 88.7, 85.3]
+                },
+                'TC': {
+                    name: 'TC队',
+                    score: 88.4,
+                    rank: '第3名',
+                    revenue: '¥1,720万',
+                    players: 6,
+                    venues: 12,
+                    kpis: [78.9, 81.2, 76.5, 80.1, 75.6],
+                    progress: [87.4, 89.6, 86.1, 86.7, 82.1]
+                }
+            };
+            
+            const data = clubData[clubName] || clubData['AG'];
+            
+            // 更新俱乐部信息
+            document.querySelector('.club-name').textContent = data.name;
+            document.querySelector('.score-value').textContent = data.score;
+            document.querySelector('.rank-value').textContent = data.rank;
+            document.querySelector('.revenue-value').textContent = data.revenue;
+            document.querySelectorAll('.stat-value')[0].textContent = data.players;
+            document.querySelectorAll('.stat-value')[1].textContent = data.venues;
+            
+            // 更新KPI卡片
+            const kpiCards = document.querySelectorAll('.kpi-card .kpi-value');
+            kpiCards.forEach((card, index) => {
+                if (data.kpis[index]) {
+                    card.textContent = data.kpis[index];
+                }
+            });
+            
+            // 更新进度条
+            const progressBars = document.querySelectorAll('.progress-fill');
+            const progressValues = document.querySelectorAll('.progress-value');
+            progressBars.forEach((bar, index) => {
+                if (data.progress[index]) {
+                    setTimeout(() => {
+                        bar.style.width = data.progress[index] + '%';
+                        bar.dataset.value = data.progress[index];
+                        progressValues[index].textContent = data.progress[index] + '/100';
+                    }, index * 100);
+                }
+            });
+            
+            // 添加切换动画效果
+            document.querySelector('.club-info-card').style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                document.querySelector('.club-info-card').style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // 生成随机数据（用于时间选择器）
+        function generateRandomData() {
+            return {
+                league: Array.from({length: 5}, () => Math.floor(Math.random() * 20) + 75),
+                club: Array.from({length: 5}, () => Math.floor(Math.random() * 15) + 85)
+            };
+        }
+    </script>
+    <script src="js/common.js"></script>
+</body>
+</html>
+
