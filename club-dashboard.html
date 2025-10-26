@@ -15,7 +15,7 @@
     
     <style>
         /* 页面容器样式 - 与其他页面保持一致 */
-        。club-overview-container {
+        club-overview-container {
             padding: 24px;
             background: #1D2129;
             min-height: 100vh;
@@ -23,48 +23,48 @@
             margin: 0 auto;
         }
         
-        。overview-dashboard { color: #FFFFFF; }
-        。overview-header { margin-bottom: 16px; }
-        。overview-title { font-size: 28px; font-weight: 700; margin: 0 0 6px; }
-        。overview-subtitle { color: #C9CDD4; margin: 0 0 16px; }
+        overview-dashboard { color: #FFFFFF; }
+        overview-header { margin-bottom: 16px; }
+        overview-title { font-size: 28px; font-weight: 700; margin: 0 0 6px; }
+        overview-subtitle { color: #C9CDD4; margin: 0 0 16px; }
 
-        。kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 16px; }
-        。kpi-card { background: #2E333B; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        。kpi-value { font-size: 24px; font-weight: 700; }
-        。kpi-label { color: #C9CDD4; font-size: 12px; margin-top: 4px; }
-        。kpi-trend { margin-top: 8px; font-size: 12px; color: #9AA4B2; }
-        。kpi-up { color: #00D4AA; } .kpi-down { color: #FF6B35; } .kpi-flat { color: #FFD60A; }
+        kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 16px; }
+        kpi-card { background: #2E333B; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        kpi-value { font-size: 24px; font-weight: 700; }
+        kpi-label { color: #C9CDD4; font-size: 12px; margin-top: 4px; }
+        kpi-trend { margin-top: 8px; font-size: 12px; color: #9AA4B2; }
+        kpi-up { color: #00D4AA; } .kpi-down { color: #FF6B35; } .kpi-flat { color: #FFD60A; }
 
-        。sub-kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
-        。sub-kpi-card { background: #1E2329; border-radius: 10px; padding: 16px; text-align: center; }
-        。sub-kpi-value { font-size: 20px; font-weight: 700; }
-        。sub-kpi-label { font-size: 12px; color: #C9CDD4; }
+        sub-kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+        sub-kpi-card { background: #1E2329; border-radius: 10px; padding: 16px; text-align: center; }
+        sub-kpi-value { font-size: 20px; font-weight: 700; }
+        sub-kpi-label { font-size: 12px; color: #C9CDD4; }
 
-        。panel { background: #2E333B; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        。panel-title { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
-        。chart { height: 280px; }
-        。charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
-        。chart-actions { margin-top: 8px; display: flex; gap: 8px; }
-        。btn-sm { background: #1E2329; border: 1px solid #4E5969; border-radius: 6px; padding: 6px 10px; color: #FFFFFF; cursor: pointer; }
-        。btn-sm:hover { border-color: #FF6B35; }
+        panel { background: #2E333B; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        panel-title { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+        chart { height: 280px; }
+        charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        chart-actions { margin-top: 8px; display: flex; gap: 8px; }
+        btn-sm { background: #1E2329; border: 1px solid #4E5969; border-radius: 6px; padding: 6px 10px; color: #FFFFFF; cursor: pointer; }
+        btn-sm:hover { border-color: #FF6B35; }
 
-        。insight-panel .insight-text { color: #C9CDD4; font-size: 12px; line-height: 1.6; }
+        insight-panel .insight-text { color: #C9CDD4; font-size: 12px; line-height: 1.6; }
 
-        。table-panel { margin-top: 16px; }
-        。table-header { display: flex; align-items: center; justify-content: space-between; }
-        。search-input { background: #1E2329; border: 1px solid #4E5969; color: #FFFFFF; padding: 8px 12px; border-radius: 6px; }
+        table-panel { margin-top: 16px; }
+        table-header { display: flex; align-items: center; justify-content: space-between; }
+        search-input { background: #1E2329; border: 1px solid #4E5969; color: #FFFFFF; padding: 8px 12px; border-radius: 6px; }
 
-        。club-table { width: 100%; border-collapse: collapse; }
-        。club-table thead th { text-align: left; font-weight: 600; color: #C9CDD4; padding: 10px 12px; border-bottom: 1px solid #4E5969; cursor: pointer; }
-        。club-table tbody td { padding: 10px 12px; border-bottom: 1px solid #4E5969; }
+        club-table { width: 100%; border-collapse: collapse; }
+        club-table thead th { text-align: left; font-weight: 600; color: #C9CDD4; padding: 10px 12px; border-bottom: 1px solid #4E5969; cursor: pointer; }
+        club-table tbody td { padding: 10px 12px; border-bottom: 1px solid #4E5969; }
 
-        。status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; display: inline-block; }
-        。status-good { background: #193a2c; color: #00D4AA; }
-        。status-normal { background: #2c3340; color: #FFD60A; }
-        。status-warning { background: #3a2c2c; color: #FF6B35; }
-        。status-danger { background: #3a1f1f; color: #ff4d4f; }
+        status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; display: inline-block; }
+        status-good { background: #193a2c; color: #00D4AA; }
+        status-normal { background: #2c3340; color: #FFD60A; }
+        status-warning { background: #3a2c2c; color: #FF6B35; }
+        status-danger { background: #3a1f1f; color: #ff4d4f; }
 
-        。table-footer { margin-top: 8px; display: flex; justify-content: flex-end; }
+        table-footer { margin-top: 8px; display: flex; justify-content: flex-end; }
         .pagination { display: flex; gap: 8px; }
         .pagination .page { background: #1E2329; border: 1px solid #4E5969; color: #FFFFFF; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
         .pagination .page.active { border-color: #FF6B35; color: #FF6B35; }
